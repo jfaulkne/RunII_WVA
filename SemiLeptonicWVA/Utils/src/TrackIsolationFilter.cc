@@ -42,7 +42,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include "AllHadronicSUSY/Utils/interface/TrackIsolationFilter.h"
+#include "SemiLeptonicWVA/Utils/interface/TrackIsolationFilter.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 

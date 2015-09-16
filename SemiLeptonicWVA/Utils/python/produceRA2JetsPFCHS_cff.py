@@ -3,7 +3,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-from AllHadronicSUSY.Utils.patJetCollectionSubsetProducer_cfi import patJetCollectionSubsetProducer
+from SemiLeptonicWVA.Utils.patJetCollectionSubsetProducer_cfi import patJetCollectionSubsetProducer
 
 # Create collection of jets with pt > 30 (for MHT)
 MHTJets = patJetCollectionSubsetProducer.clone(
