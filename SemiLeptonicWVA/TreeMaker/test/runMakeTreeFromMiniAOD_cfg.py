@@ -9,9 +9,9 @@ from SemiLeptonicWVA.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 
 MC= parameters.value("MC", False)
-CH = parameters.value("channel","")
+CH = parameters.value("channel","el")
 RUN = parameters.value("run",0)
-ERA = parameters.value("era","")
+ERA = parameters.value("era","july")
 OUTFILE = parameters.value("outfile","ReducedSelection")
 
 SingleLepton_Dataset = {
