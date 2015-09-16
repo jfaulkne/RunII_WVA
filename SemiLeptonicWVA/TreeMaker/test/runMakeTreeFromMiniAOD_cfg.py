@@ -167,9 +167,9 @@ SingleLepton_Dataset = {
 if MC: dataSetName = parameters.value("dataset","")
 else: dataSetName = parameters.value("dataset", SingleLepton_Dataset[CH][ERA][RUN])
 
-JSON = {"prompt":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_prompt.txt",
-"july":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_july.txt",
-"254833":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"}
+JSON = {"prompt":"json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_prompt.txt",
+"july":"json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_july.txt",
+"254833":"json/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"}
 
 global_tag = parameters.value("global_tag","74X_dataRun2_v2")
 QCD= parameters.value("QCD", False)

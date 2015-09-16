@@ -275,14 +275,14 @@ isCrab=False):
       )
 
     jecLevelsAK8 = [
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L1FastJet_AK8PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L2Relative_AK8PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L3Absolute_AK8PFchs.txt"
+        "JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt",
+        "JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt",
+        "JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"
         ]
     jecLevelsAK4 = [
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L1FastJet_AK4PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L2Relative_AK4PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L3Absolute_AK4PFchs.txt"
+        "JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt",
+        "JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt",
+        "JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"
         ]
 
     process.substructureSequence = cms.Sequence()
@@ -619,36 +619,35 @@ isCrab=False):
     process.MHTJetsProperties = jetproperties.clone(
     JetTag  = cms.InputTag('MHTJets'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
+    L1File = cms.string("JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
     )
     from SemiLeptonicWVA.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
     process.MHTJetsPropertiesAK8 = jetpropertiesAK8.clone(
     JetTag  = cms.InputTag('MHTJetsAK8'),
     puppiJetTag = cms.InputTag('selectedPuppiJetsAK8'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
+    L1File = cms.string("JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
+    L2File = cms.string("JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
+    L3File = cms.string("JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
     )
     from SemiLeptonicWVA.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
     JetTag  = cms.InputTag('slimmedJets'),
     MinPt = cms.double(-1),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
-    )
+    L1File = cms.string("JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),)
     from SemiLeptonicWVA.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
     process.JetsPropertiesAK8 = jetpropertiesAK8.clone(
     JetTag  = cms.InputTag('slimmedJetsAK8'),
     MinPt = cms.double(-1),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
+    L1File = cms.string("JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
+    L2File = cms.string("JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
+    L3File = cms.string("JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
     )
     if doAK8Reclustering:
         process.JetsPropertiesAK8.JetTag = cms.InputTag('selectedPatJetsAK8')
@@ -668,9 +667,9 @@ isCrab=False):
     METTag  = cms.InputTag("slimmedMETs"),
     JetTag  = cms.InputTag('slimmedJets'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
+    L1File = cms.string("JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
     MuTag = cms.InputTag("slimmedMuons"),
     RhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
     corrMet = cms.bool(True),
