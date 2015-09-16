@@ -5,7 +5,7 @@
 # cmsRun ../test/runMakeLostLeptonTreeFromPAT_cfg.py dataset=/store/user/mschrode/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/RA2PreSelection_Summer12_DR53X-PU_S10_START53_V7A-v1_V4/6c50609e978ba7d5388d5439fc628605/RA2Skim_100_1_dgv.root, global_tag=START53_V7F::All, MC=True, debug=True
 
 # Read parameters
-from AllHadronicSUSY.Utils.CommandLineParams import CommandLineParams
+from SemiLeptonic.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 
 MC= parameters.value("MC", False)
@@ -167,9 +167,9 @@ SingleLepton_Dataset = {
 if MC: dataSetName = parameters.value("dataset","")
 else: dataSetName = parameters.value("dataset", SingleLepton_Dataset[CH][ERA][RUN])
 
-JSON = {"prompt":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_prompt.txt",
-"july":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_july.txt",
-"254833":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/json/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"}
+JSON = {"prompt":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_prompt.txt",
+"july":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON_july.txt",
+"254833":"/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/json/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"}
 
 global_tag = parameters.value("global_tag","74X_dataRun2_v2")
 QCD= parameters.value("QCD", False)
@@ -219,7 +219,7 @@ import FWCore.ParameterSet.Config as cms
 #process = cms.Process("RA2EventSelection")
 process = cms.Process(processName)
 
-from AllHadronicSUSY.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeTreeFromMiniAOD
+from SemiLeptonicWVA.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeTreeFromMiniAOD
 makeTreeTreeFromMiniAOD(process,
                 outFileName=OUTFILE,
                 NJetsMin=nJetsMin,

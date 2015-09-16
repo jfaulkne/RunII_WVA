@@ -71,7 +71,7 @@ isCrab=False):
 # the indexing of these vectors must match
 # If the version number of the input trigger name is omitted,
 # any matching trigger will be included (default behavior)
-    from AllHadronicSUSY.Utils.triggerproducer_cfi import triggerProducer
+    from SemiLeptonicWVA.Utils.triggerproducer_cfi import triggerProducer
     process.TriggerProducer = triggerProducer.clone( 
         trigTagArg1 = cms.string('TriggerResults'),
         trigTagArg2 = cms.string(''),
@@ -124,7 +124,7 @@ isCrab=False):
 
 #    process.GenEventInfo = cms.Sequence()
 
-    from AllHadronicSUSY.Utils.geneventinfo_cfi import geneventinfo
+    from SemiLeptonicWVA.Utils.geneventinfo_cfi import geneventinfo
 
 #    if MC:
     process.GenEventInfo = geneventinfo.clone()
@@ -157,8 +157,8 @@ isCrab=False):
 ###Lepton Filter
     process.filterSeq = cms.Sequence ()
 
-#    from AllHadronicSUSY.Utils.leptonfilter_cfi import leptonFilter
-    process.load('AllHadronicSUSY.Utils.leptonfilter_cfi')
+#    from SemiLeptonicWVA.Utils.leptonfilter_cfi import leptonFilter
+    process.load('SemiLeptonicWVA.Utils.leptonfilter_cfi')
 
     process.leptonFilter.electronsInputTag = cms.InputTag("slimmedElectrons")
     process.leptonFilter.muonsInputTag = cms.InputTag("slimmedMuons")
@@ -190,7 +190,7 @@ isCrab=False):
 
     
     ## --- Setup WeightProducer -------------------------------------------
-    from AllHadronicSUSY.WeightProducer.getWeightProducer_cff import getWeightProducer
+    from SemiLeptonicWVA.WeightProducer.getWeightProducer_cff import getWeightProducer
     process.WeightProducer = getWeightProducer(testFileName)
     process.WeightProducer.Lumi                       = cms.double(5000)
     process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
@@ -229,8 +229,8 @@ isCrab=False):
     )
     
     ## isotrack producer
-    from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-    from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
+    from SemiLeptonicWVA.Utils.trackIsolationMaker_cfi import trackIsolationFilter
+    from SemiLeptonicWVA.Utils.trackIsolationMaker_cfi import trackIsolationCounter
     ## default
     process.IsolatedTracks = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
@@ -275,14 +275,14 @@ isCrab=False):
       )
 
     jecLevelsAK8 = [
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L1FastJet_AK8PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L2Relative_AK8PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L3Absolute_AK8PFchs.txt"
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L1FastJet_AK8PFchs.txt",
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L2Relative_AK8PFchs.txt",
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L3Absolute_AK8PFchs.txt"
         ]
     jecLevelsAK4 = [
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L1FastJet_AK4PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L2Relative_AK4PFchs.txt",
-        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/_50nsV5_DATA_L3Absolute_AK4PFchs.txt"
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L1FastJet_AK4PFchs.txt",
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L2Relative_AK4PFchs.txt",
+        "file:/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/_50nsV5_DATA_L3Absolute_AK4PFchs.txt"
         ]
 
     process.substructureSequence = cms.Sequence()
@@ -522,7 +522,7 @@ isCrab=False):
 
     process.ak4PFJets = ak4PFJets.clone(src = "packedPFCandidates")
 
-    from AllHadronicSUSY.Utils.ak4pfjets_cfi import patJetCorrFactorsAK4, patJetsAK4
+    from SemiLeptonicWVA.Utils.ak4pfjets_cfi import patJetCorrFactorsAK4, patJetsAK4
 
     process.patJetCorrFactorsAK4 = patJetCorrFactorsAK4.clone( src = 'ak4PFJets' )
     process.patJetsAK4 = patJetsAK4.clone( jetSource = 'ak4PFJets' )
@@ -551,7 +551,7 @@ isCrab=False):
         setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
     # Producers
-    from AllHadronicSUSY.Utils.electron_cfi import electron
+    from SemiLeptonicWVA.Utils.electron_cfi import electron
     process.Electrons = electron.clone(
         VertexTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
         EleTag = cms.InputTag("slimmedElectrons"),
@@ -569,7 +569,7 @@ isCrab=False):
     my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_50ns_V1_cff']
     for idmod in my_id_modules:
         setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-    from AllHadronicSUSY.Utils.photon_cfi import photon
+    from SemiLeptonicWVA.Utils.photon_cfi import photon
     process.Photons = photon.clone(
         PhoTag = cms.InputTag("slimmedPhotons"),
         phoLooseIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-50ns-V1-standalone-loose"),
@@ -577,34 +577,34 @@ isCrab=False):
         phoTightIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-50ns-V1-standalone-tight")
     )
 
-    from AllHadronicSUSY.Utils.muon_cfi import muon
+    from SemiLeptonicWVA.Utils.muon_cfi import muon
     process.Muons = muon.clone(
         VertexTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
         MuTag = cms.InputTag("slimmedMuons"),
         MinPt = cms.double(-1),
         RhoTag = cms.InputTag("fixedGridRhoFastjetAll")
     )
-    from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+    from SemiLeptonicWVA.Utils.subJetSelection_cfi import SubJetSelection
     process.HTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('slimmedJets'),
     MinPt								  = cms.double(30),
     MaxEta								  = cms.double(2.5),
     )
-    from AllHadronicSUSY.Utils.htdouble_cfi import htdouble
+    from SemiLeptonicWVA.Utils.htdouble_cfi import htdouble
     process.HT = htdouble.clone(
     JetTag  = cms.InputTag('HTJets'),
     )
-    from AllHadronicSUSY.Utils.njetint_cfi import njetint
+    from SemiLeptonicWVA.Utils.njetint_cfi import njetint
     process.NJets = njetint.clone(
     JetTag  = cms.InputTag('HTJets'),
     )
-    from AllHadronicSUSY.Utils.btagint_cfi import btagint
+    from SemiLeptonicWVA.Utils.btagint_cfi import btagint
     process.BTags = btagint.clone(
     JetTag  = cms.InputTag('HTJets'),
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     BTagCutValue					= cms.double(0.679)
     )
-    from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+    from SemiLeptonicWVA.Utils.subJetSelection_cfi import SubJetSelection
     process.MHTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('slimmedJets'),
     MinPt								  = cms.double(30),
@@ -615,83 +615,83 @@ isCrab=False):
     MinPt								  = cms.double(30),
     MaxEta								  = cms.double(5.0),
     )
-    from AllHadronicSUSY.Utils.jetproperties_cfi import jetproperties
+    from SemiLeptonicWVA.Utils.jetproperties_cfi import jetproperties
     process.MHTJetsProperties = jetproperties.clone(
     JetTag  = cms.InputTag('MHTJets'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
+    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
     )
-    from AllHadronicSUSY.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
+    from SemiLeptonicWVA.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
     process.MHTJetsPropertiesAK8 = jetpropertiesAK8.clone(
     JetTag  = cms.InputTag('MHTJetsAK8'),
     puppiJetTag = cms.InputTag('selectedPuppiJetsAK8'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
+    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
+    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
+    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
     )
-    from AllHadronicSUSY.Utils.jetproperties_cfi import jetproperties
+    from SemiLeptonicWVA.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
     JetTag  = cms.InputTag('slimmedJets'),
     MinPt = cms.double(-1),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
+    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
     )
-    from AllHadronicSUSY.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
+    from SemiLeptonicWVA.Utils.jetpropertiesAK8_cfi import jetpropertiesAK8
     process.JetsPropertiesAK8 = jetpropertiesAK8.clone(
     JetTag  = cms.InputTag('slimmedJetsAK8'),
     MinPt = cms.double(-1),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
+    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK8PFchs.txt"),
+    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK8PFchs.txt"),
+    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK8PFchs.txt"),
     )
     if doAK8Reclustering:
         process.JetsPropertiesAK8.JetTag = cms.InputTag('selectedPatJetsAK8')
     if doPuppi:
         process.JetsPropertiesAK8.JetTag = cms.InputTag('selectedPuppiJetsAK8')
-    from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
+    from SemiLeptonicWVA.Utils.mhtdouble_cfi import mhtdouble
     process.MHT = mhtdouble.clone(
     JetTag  = cms.InputTag('MHTJets'),
     )
-    from AllHadronicSUSY.Utils.deltaphidouble_cfi import deltaphidouble
+    from SemiLeptonicWVA.Utils.deltaphidouble_cfi import deltaphidouble
     process.DeltaPhi = deltaphidouble.clone(
     DeltaPhiJets  = cms.InputTag('HTJets'),
     MHTJets  = cms.InputTag("MHTJets"),
     )
-    from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
+    from SemiLeptonicWVA.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
     METTag  = cms.InputTag("slimmedMETs"),
     JetTag  = cms.InputTag('slimmedJets'),
     doJEC  = cms.bool(doJECCorrection),
-    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
-    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
-    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
+    L1File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L1FastJet_AK4PFchs.txt"),
+    L2File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L2Relative_AK4PFchs.txt"),
+    L3File = cms.string("/afs/cern.ch/work/j/jfaulkne/CMSSW_7_4_7_patch2/src/SemiLeptonicWVA/JEC/Summer15_50nsV5_DATA_L3Absolute_AK4PFchs.txt"),
     MuTag = cms.InputTag("slimmedMuons"),
     RhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
     corrMet = cms.bool(True),
     )
-    from AllHadronicSUSY.Utils.leptonint_cfi import leptonint
+    from SemiLeptonicWVA.Utils.leptonint_cfi import leptonint
     process.Leptons = leptonint.clone(
     LeptonTag = cms.VInputTag(cms.InputTag('selectedIDIsoMuons'),cms.InputTag('selectedIDIsoElectrons')),
     )
-    from AllHadronicSUSY.Utils.primaryverticies_cfi import primaryverticies
+    from SemiLeptonicWVA.Utils.primaryverticies_cfi import primaryverticies
     process.NVtx = primaryverticies.clone(
     VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
-    from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
+    from SemiLeptonicWVA.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
     process.GenLeptons = genLeptonRecoCand.clone(
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
     )
-    from AllHadronicSUSY.Utils.genJet_cfi import genJet
+    from SemiLeptonicWVA.Utils.genJet_cfi import genJet
     process.GenJets = genJet.clone(
                             GenJetCollTag  = cms.InputTag("slimmedGenJets"),
                             )
-    from AllHadronicSUSY.Utils.genJetAK8_cfi import genJetAK8
+    from SemiLeptonicWVA.Utils.genJetAK8_cfi import genJetAK8
     process.GenJetsAK8 = genJetAK8.clone(
                             GenJetCollTag  = cms.InputTag("selectedGenJetsAK8"),
                             )
@@ -715,7 +715,7 @@ isCrab=False):
     RecoCandVector.extend(['Photons(Photons)|Photons:isLoose(b_isLoose)|Photons:isMedium(b_isMedium)|Photons:isTight(b_isTight)'] ) # photon information on various variables
 
     
-    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
+    from SemiLeptonicWVA.TreeMaker.treeMaker import TreeMaker
     process.TreeMaker2 = TreeMaker.clone(
     	TreeName          = cms.string("PreSelection"),
     	VarsRecoCand = RecoCandVector,

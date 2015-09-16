@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    AllHadronicSUSY/TreeMaker
+// Package:    SemiLeptonicWVA/TreeMaker
 // Class:      TreeMaker
 // 
-/**\class TreeMaker TreeMaker.cc AllHadronicSUSY/TreeMaker/plugins/TreeMaker.cc
+/**\class TreeMaker TreeMaker.cc SemiLeptonicWVA/TreeMaker/plugins/TreeMaker.cc
  * 
  * Description: [one line class summary]
  * 
@@ -15,7 +15,7 @@
 //         Created:  Fri, 03 Dec 2014 13:48:35 GMT
 //
 //
-#include "AllHadronicSUSY/TreeMaker/interface/TreeMaker.h"
+#include "SemiLeptonicWVA/TreeMaker/interface/TreeMaker.h"
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include <memory>
