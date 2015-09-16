@@ -5,7 +5,7 @@
 # cmsRun ../test/runMakeLostLeptonTreeFromPAT_cfg.py dataset=/store/user/mschrode/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/RA2PreSelection_Summer12_DR53X-PU_S10_START53_V7A-v1_V4/6c50609e978ba7d5388d5439fc628605/RA2Skim_100_1_dgv.root, global_tag=START53_V7F::All, MC=True, debug=True
 
 # Read parameters
-from SemiLeptonic.Utils.CommandLineParams import CommandLineParams
+from SemiLeptonicWVA.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 
 MC= parameters.value("MC", False)
