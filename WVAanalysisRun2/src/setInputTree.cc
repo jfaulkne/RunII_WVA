@@ -61,12 +61,33 @@ void setInputTree::Init()
    fChain->SetBranchAddress("NJets", &NJets, &b_NJets);
    fChain->SetBranchAddress("BTags", &BTags, &b_BTags);
    fChain->SetBranchAddress("NVtx", &NVtx, &b_NVtx);
+   fChain->SetBranchAddress("npT", &npT, &b_npT);
    fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
+   fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
+   fChain->SetBranchAddress("genEventWeight", &genEventWeight, &b_genEventWeight);
+   fChain->SetBranchAddress("passFilterHBHE", &passFilterHBHE, &b_passFilterHBHE);
+   fChain->SetBranchAddress("passFilterHBHEIso", &passFilterHBHEIso, &b_passFilterHBHEIso);
+   fChain->SetBranchAddress("passFilterCSCHalo", &passFilterCSCHalo, &b_passFilterCSCHalo);
+   fChain->SetBranchAddress("passFilterGoodVtx", &passFilterGoodVtx, &b_passFilterGoodVtx);
+   fChain->SetBranchAddress("passFilterEEBadSC", &passFilterEEBadSC, &b_passFilterEEBadSC);
+   fChain->SetBranchAddress("passFilterHBHELooseRerun", &passFilterHBHELooseRerun, &b_passFilterHBHELooseRerun);
+   fChain->SetBranchAddress("passFilterHBHETightRerun", &passFilterHBHETightRerun, &b_passFilterHBHETightRerun);
+   fChain->SetBranchAddress("passFilterHBHEIsoRerun", &passFilterHBHEIsoRerun, &b_passFilterHBHEIsoRerun);
    fChain->SetBranchAddress("MHT", &MHT, &b_MHT);
    fChain->SetBranchAddress("METPt", &METPt, &b_METPt);
    fChain->SetBranchAddress("METPhi", &METPhi, &b_METPhi);
    fChain->SetBranchAddress("METPtRaw", &METPtRaw, &b_METPtRaw);
    fChain->SetBranchAddress("METPhiRaw", &METPhiRaw, &b_METPhiRaw);
+   fChain->SetBranchAddress("METPtDefault", &METPtDefault, &b_METPtDefault);
+   fChain->SetBranchAddress("METPhiDefault", &METPhiDefault, &b_METPhiDefault);
+   fChain->SetBranchAddress("METPtType1", &METPtType1, &b_METPtType1);
+   fChain->SetBranchAddress("METPhiType1", &METPhiType1, &b_METPhiType1);
+   fChain->SetBranchAddress("METPtType1XYSmear", &METPtType1XYSmear, &b_METPtType1XYSmear);
+   fChain->SetBranchAddress("METPhiType1XYSmear", &METPhiType1XYSmear, &b_METPhiType1XYSmear);
+   fChain->SetBranchAddress("METPtType1Smear", &METPtType1Smear, &b_METPtType1Smear);
+   fChain->SetBranchAddress("METPhiType1Smear", &METPhiType1Smear, &b_METPhiType1Smear);
+   fChain->SetBranchAddress("METPtType1XY", &METPtType1XY, &b_METPtType1XY);
+   fChain->SetBranchAddress("METPhiType1XY", &METPhiType1XY, &b_METPhiType1XY);
    fChain->SetBranchAddress("HT", &HT, &b_HT);
    fChain->SetBranchAddress("DeltaPhi1", &DeltaPhi1, &b_DeltaPhi1);
    fChain->SetBranchAddress("DeltaPhi2", &DeltaPhi2, &b_DeltaPhi2);
@@ -174,7 +195,6 @@ void setInputTree::Init()
    fChain->SetBranchAddress("ElectronsTLorentzVector", ElectronsTLorentzVector, &b_ElectronsTLorentzVector);
    fChain->SetBranchAddress("Electrons_charge", Electrons_charge, &b_Electrons_charge);
    fChain->SetBranchAddress("Electrons_isHEEP", Electrons_isHEEP, &b_Electrons_isHEEP);
-   fChain->SetBranchAddress("Electrons_isHEEPv50", Electrons_isHEEPv50, &b_Electrons_isHEEPv50);
    fChain->SetBranchAddress("Electrons_type", Electrons_type, &b_Electrons_type);
    fChain->SetBranchAddress("Electrons_mass", Electrons_mass, &b_Electrons_mass);
    fChain->SetBranchAddress("Electrons_pfDeltaCorrRelIso", Electrons_pfDeltaCorrRelIso, &b_Electrons_pfDeltaCorrRelIso);
@@ -219,6 +239,9 @@ void setInputTree::Init()
    fChain->SetBranchAddress("Photons_isMedium", Photons_isMedium, &b_Photons_isMedium);
    fChain->SetBranchAddress("Photons_isTight", Photons_isTight, &b_Photons_isTight);
 
+   fChain->SetBranchAddress("TriggerProducerTriggerPrescales", &TriggerProducerTriggerPrescales, &b_TriggerProducerTriggerPrescales);
+   fChain->SetBranchAddress("TriggerProducerTriggerPass", &TriggerProducerTriggerPass, &b_TriggerProducerTriggerPass);
+   fChain->SetBranchAddress("TriggerProducerTriggerNames", &TriggerProducerTriggerNames, &b_TriggerProducerTriggerNames);
    //   Notify();
 }
 

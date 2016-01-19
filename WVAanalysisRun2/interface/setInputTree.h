@@ -29,12 +29,33 @@ public :
    Int_t           NJets;
    Int_t           BTags;
    Int_t           NVtx;
+   Int_t	   npT;
+   Int_t           passFilterHBHE;
+   Int_t           passFilterHBHEIso;
+   Int_t           passFilterCSCHalo;
+   Int_t           passFilterGoodVtx;
+   Int_t           passFilterEEBadSC;
+   Int_t           passFilterHBHELooseRerun;
+   Int_t           passFilterHBHETightRerun;
+   Int_t           passFilterHBHEIsoRerun;
    Float_t         Weight;
+   Float_t	   genEventWeight;
+   Float_t         PUWeight;
    Float_t         MHT;
    Float_t         METPt;
    Float_t         METPhi;
    Float_t         METPtRaw;
    Float_t         METPhiRaw;
+   Float_t         METPtDefault;
+   Float_t         METPhiDefault;
+   Float_t         METPtType1;
+   Float_t         METPhiType1;
+   Float_t         METPtType1XYSmear;
+   Float_t         METPhiType1XYSmear;
+   Float_t         METPtType1Smear;
+   Float_t         METPhiType1Smear;
+   Float_t         METPtType1XY;
+   Float_t         METPhiType1XY;
    Float_t         HT;
    Float_t         DeltaPhi1;
    Float_t         DeltaPhi2;
@@ -142,7 +163,6 @@ public :
    Float_t         ElectronsTLorentzVector[7];   //[ElectronsNum]
    Int_t           Electrons_charge[7];   //[ElectronsNum]
    UChar_t         Electrons_isHEEP[7];   //[ElectronsNum]
-   UChar_t         Electrons_isHEEPv50[7];   //[ElectronsNum]
    Int_t           Electrons_type[7];   //[ElectronsNum]
    Float_t         Electrons_mass[7];   //[ElectronsNum]
    Float_t         Electrons_pfDeltaCorrRelIso[7];   //[ElectronsNum]
@@ -187,6 +207,9 @@ public :
    UChar_t	   Photons_isMedium[7];
    UChar_t	   Photons_isTight[7];
 
+   std::vector<int>     *TriggerProducerTriggerPrescales;
+   std::vector<unsigned int> *TriggerProducerTriggerPass;
+   std::vector<std::string>  *TriggerProducerTriggerNames;
 
    // List of branches
    TBranch        *b_RunNum;   //!
@@ -195,12 +218,33 @@ public :
    TBranch        *b_NJets;   //!
    TBranch        *b_BTags;   //!
    TBranch        *b_NVtx;   //!
+   TBranch        *b_npT;   //!
+   TBranch	  *b_passFilterHBHE;
+   TBranch	  *b_passFilterHBHEIso;
+   TBranch	  *b_passFilterCSCHalo;
+   TBranch	  *b_passFilterGoodVtx;
+   TBranch	  *b_passFilterEEBadSC;
+   TBranch	  *b_passFilterHBHELooseRerun;
+   TBranch	  *b_passFilterHBHETightRerun;
+   TBranch	  *b_passFilterHBHEIsoRerun;
    TBranch        *b_Weight;   //!
+   TBranch        *b_PUWeight;   //!
+   TBranch	  *b_genEventWeight;
    TBranch        *b_MHT;   //!
    TBranch        *b_METPt;   //!
    TBranch        *b_METPhi;   //!
    TBranch        *b_METPtRaw;   //!
    TBranch        *b_METPhiRaw;   //!
+   TBranch        *b_METPtDefault;   //!
+   TBranch        *b_METPhiDefault;   //!
+   TBranch        *b_METPtType1;   //!
+   TBranch        *b_METPhiType1;   //!
+   TBranch        *b_METPtType1XYSmear;   //!
+   TBranch        *b_METPhiType1XYSmear;   //!
+   TBranch        *b_METPtType1Smear;   //!
+   TBranch        *b_METPhiType1Smear;   //!
+   TBranch        *b_METPtType1XY;   //!
+   TBranch        *b_METPhiType1XY;   //!
    TBranch        *b_HT;   //!
    TBranch        *b_DeltaPhi1;   //!
    TBranch        *b_DeltaPhi2;   //!
@@ -308,7 +352,6 @@ public :
    TBranch        *b_ElectronsTLorentzVector;   //!
    TBranch        *b_Electrons_charge;   //!
    TBranch        *b_Electrons_isHEEP;   //!
-   TBranch        *b_Electrons_isHEEPv50;   //!
    TBranch        *b_Electrons_type;   //!
    TBranch        *b_Electrons_mass;   //!
    TBranch        *b_Electrons_pfDeltaCorrRelIso;   //!
@@ -352,6 +395,9 @@ public :
    TBranch        *b_Photons_isLoose;   //!
    TBranch        *b_Photons_isMedium;   //!
    TBranch        *b_Photons_isTight;   //!
+   TBranch	  *b_TriggerProducerTriggerPrescales;
+   TBranch	  *b_TriggerProducerTriggerPass;
+   TBranch	  *b_TriggerProducerTriggerNames;
 
    setInputTree(TFile* inputFile, std::string inputTree);
    virtual ~setInputTree();
