@@ -72,13 +72,19 @@ class PrescaleWeightProducer: public edm::EDProducer {
 
       /// The instance of the HLTConfigProvider as a data member
       HLTConfigProvider hltConfig_;
+
 };
 
 PrescaleWeightProducer::PrescaleWeightProducer(const edm::ParameterSet& iConfig) :
-   _startWeight(iConfig.getParameter<double> ("weight")), _LumiScale(iConfig.getParameter<double> ("LumiScale")), _PrescaleCut(iConfig.getParameter<double> ("PrescaleCut")), _PFHTWeights(iConfig.getParameter<bool> ("PFHTWeights")), 
-         _weightName(iConfig.getParameter<edm::InputTag> ("weightName")), _processName(iConfig.getParameter<string> (
-               "HLTProcess")), _hltTag(iConfig.getParameter<edm::InputTag> ("hltTag")), _trigEvtObj(
-               iConfig.getParameter<edm::InputTag> ("trgEvtObj")) {
+   _startWeight(iConfig.getParameter<double> ("weight")),
+   _LumiScale(iConfig.getParameter<double> ("LumiScale")),
+   _PrescaleCut(iConfig.getParameter<double> ("PrescaleCut")),
+   _PFHTWeights(iConfig.getParameter<bool> ("PFHTWeights")), 
+   _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
+   _processName(iConfig.getParameter<string> ("HLTProcess")),
+   _hltTag(iConfig.getParameter<edm::InputTag> ("hltTag")),
+   _trigEvtObj(iConfig.getParameter<edm::InputTag> ("trgEvtObj"))
+{
 
    if (_startWeight >= 0) {
       cout << "PrescaleWeightProducer: Using constant event weight of " << _startWeight << endl;
@@ -140,7 +146,6 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
          found = trigName.find("0_v");
          if (found != 8)
             continue;
-         //  cout << trigName << " " << hltConfig_.prescaleValue(iEvent, iSetup, trigName) << endl;
          ret = vmap.insert(pair<char, int> (trigName[11], 1)); 
          if (ret.second == false) {
             ret.first->second += 1;
@@ -247,7 +252,7 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
             found = trigName.find("0_v");
             if (found != 10)
                continue;
-            //cout << trigName << " " << hltConfig_.prescaleValue(iEvent, iSetup, trigName) << endl;
+            //cout << trigName << " " << HLTPrescaleProvider::prescaleValue(iEvent, iSetup, trigName) << endl;
             ret = vmap.insert(pair<char, int> (trigName[13], 1));
             if (ret.second == false) {
                ret.first->second += 1;
@@ -261,7 +266,7 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
             found = trigName.find("0_v");
             if (found != 14)
                continue;
-            //cout << trigName << " " << hltConfig_.prescaleValue(iEvent, iSetup, trigName) << endl;
+            //cout << trigName << " " << HLTPrescaleProvider::prescaleValue(iEvent, iSetup, trigName) << endl;
             ret = vmap.insert(pair<char, int> (trigName[17], 1));
             if (ret.second == false) {
                ret.first->second += 1;

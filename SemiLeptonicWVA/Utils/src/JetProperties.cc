@@ -63,8 +63,10 @@ private:
   std::string l1file;
   std::string l2file;
   std::string l3file;
+  std::string l2l3file;
   bool doJEC;
   double MinPt_;
+  JetCorrectorParameters *L2L3JetPar;        
   //	std::string   btagname_;
 
 	
@@ -92,6 +94,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	l1file = iConfig.getParameter<std::string> ("L1File");
 	l2file = iConfig.getParameter<std::string> ("L2File");
 	l3file = iConfig.getParameter<std::string> ("L3File");
+	l2l3file = iConfig.getParameter<std::string> ("L2L3File");
 	doJEC = iConfig.getParameter<bool> ("doJEC");
 	MinPt_ = iConfig.getParameter <double> ("MinPt");
 	//	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
@@ -122,8 +125,6 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<double> > (string5).setBranchAlias(string5);
 	const std::string string6("neutralEmEnergyFraction");
 	produces<std::vector<double> > (string6).setBranchAlias(string6);
-// 	const std::string string7("patJetsNeutralEmFractionPBNR");
-// 	produces<std::vector<double> > (string7).setBranchAlias(string7);
 	const std::string string8("electronMultiplicity");
 	produces<std::vector<int> > (string8).setBranchAlias(string8);
 	const std::string string9("photonEnergyFraction");
@@ -150,6 +151,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
         produces<std::vector<double> > (string27).setBranchAlias(string27);	
 	const std::string string28("isTightJetId");
 	produces<std::vector<bool> > (string28).setBranchAlias(string28);
+	const std::string string29("isTightLepVetoJetId");
+	produces<std::vector<bool> > (string29).setBranchAlias(string29);
 }
 
 
@@ -180,7 +183,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > neutralHadronMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > chargedEmEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > neutralEmEnergyFraction(new std::vector<double>);
-// 	std::auto_ptr< std::vector<double> > patJetsNeutralEmFractionPBNR(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > electronEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > electronMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > photonEnergyFraction(new std::vector<double>);
@@ -190,6 +192,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<double> > bDiscriminatorCSV(new std::vector<double>);
 	std::auto_ptr< std::vector<bool> > isLooseJetId(new std::vector<bool>);
 	std::auto_ptr< std::vector<bool> > isTightJetId(new std::vector<bool>);
+	std::auto_ptr< std::vector<bool> > isTightLepVetoJetId(new std::vector<bool>);
 	std::auto_ptr< std::vector<double> > bDiscriminatorICSV(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > PtCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > EtaCorr(new std::vector<double>);
@@ -205,21 +208,18 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	//  Load the JetCorrectorParameter objects into a vector, IMPORTANT: THE ORDER MATTERS HERE !!!! 
 	std::vector<JetCorrectorParameters> vPar;
-	/*	for ( std::vector<std::string>::const_iterator payloadBegin = jecPayloadNames_.begin(),
-		payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
-	  JetCorrectorParameters pars(*ipayload);
-	  vPar.push_back(pars);
-	  }*/
-	//	std::cout << " l1file " << l1file << " - PHYS14_25_V2_All_L1FastJet_AK4PFchs.txt" << std::endl;
-
+	
+	if (l2l3file!="NONE")
+	  L2L3JetPar  = new JetCorrectorParameters(l2l3file);        
         JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(l3file);        
         JetCorrectorParameters *L2JetPar  = new JetCorrectorParameters(l2file);            
         JetCorrectorParameters *L1JetPar  = new JetCorrectorParameters(l1file);             
-	//        JetCorrectorParameters *L1JetPar  = new JetCorrectorParameters("PHYS14_25_V2_All_L1FastJet_AK4PFchs.txt");             
 
         vPar.push_back(*L1JetPar);                                                                        
         vPar.push_back(*L2JetPar);                                                                                                   
         vPar.push_back(*L3JetPar); 
+	if (l2l3file!="NONE")
+	  vPar.push_back(*L2L3JetPar); 
 
 	FactorizedJetCorrector *JetCorrector = new FactorizedJetCorrector(vPar);
 
@@ -231,6 +231,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 		  bool looseJetId=false;
 		  bool tightJetId=false;
+		  bool tightLepVetoJetId=false;
 
 		  reco::Candidate::LorentzVector uncorrJet;
 		  // The pat::Jet "knows" if it has been corrected, so here
@@ -274,7 +275,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  neutralHadronMultiplicity->push_back( Jets->at(i).neutralHadronMultiplicity() );
 		  chargedEmEnergyFraction->push_back( Jets->at(i).chargedEmEnergyFraction() );
 		  neutralEmEnergyFraction->push_back( Jets->at(i).neutralEmEnergyFraction() );
-		  // 			patJetsNeutralEmFractionPBNR->push_back( Jets->at(i).patJetsNeutralEmFractionPBNR() / Jets->at(i).jecFactor(0) );
 		  electronEnergyFraction->push_back( Jets->at(i).electronEnergyFraction() );
 		  electronMultiplicity->push_back( Jets->at(i).electronMultiplicity() );
 		  photonEnergyFraction->push_back( Jets->at(i).photonEnergyFraction() );
@@ -291,33 +291,32 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  float CEMF = Jets->at(i).chargedEmEnergyFraction();
 		  int NumConst = Jets->at(i).chargedMultiplicity()+Jets->at(i).neutralMultiplicity();
 		  int CHM = Jets->at(i).chargedMultiplicity();
+                  int NumNeutralParticle = Jets->at(i).neutralMultiplicity();
 
-		  if ((NHF<0.99 && NEMF<0.99 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(Jets->at(i).eta()\
-																	       )>2.4))  looseJetId=true;
-		  if ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(Jets->at(i).eta()\
-																	       )>2.4))  tightJetId=true;
+                  if ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99)\
+                     || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) looseJetId=true;
 
-		  /*
-		  if (Jets->at(i).nConstituents() > 1 &&
-		      Jets->at(i).photonEnergyFraction() < 0.99 &&
-		      Jets->at(i).neutralHadronEnergyFraction() < 0.99 &&
-		      Jets->at(i).muonEnergyFraction() < 0.8 &&
-		      Jets->at(i).electronEnergyFraction() < 0.9 &&
-		      (Jets->at(i).chargedHadronMultiplicity() > 0 || fabs(Jets->at(i).eta())>2.4 ) &&
-		      (Jets->at(i).chargedEmEnergyFraction() < 0.99 || fabs(Jets->at(i).eta())>2.4 ) &&
-		      (Jets->at(i).chargedHadronEnergyFraction() > 0. || fabs(Jets->at(i).eta())>2.4 ) )
-		    looseJetId = true;
-		  */
+                  if ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99)\
+                     || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) tightJetId=true;
+
+                  if ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0\
+                     && CEMF<0.90) || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) tightLepVetoJetId=true;
+
+                  if (NEMF<0.90 && NumNeutralParticle>10 && abs(Jets->at(i).eta())>3.0) looseJetId=true;
+
+                  if (NEMF<0.90 && NumNeutralParticle>10 && abs(Jets->at(i).eta())>3.0) tightJetId=true;
 
 		  isLooseJetId->push_back(looseJetId);
 		  isTightJetId->push_back(tightJetId);
+		  isTightLepVetoJetId->push_back(tightLepVetoJetId);
+
 		}
 	}
 	delete JetCorrector;
 	delete L1JetPar;
 	delete L2JetPar;
 	delete L3JetPar;
-
+	
 	const std::string string00("");
 	iEvent.put(prodJets );
 	
@@ -335,8 +334,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(chargedEmEnergyFraction,string5);
 	const std::string string6("neutralEmEnergyFraction");
 	iEvent.put(neutralEmEnergyFraction,string6);
-// 	const std::string string7("patJetsNeutralEmFractionPBNR");
-// 	iEvent.put(patJetsNeutralEmFractionPBNR,string7);
 	const std::string string8("electronMultiplicity");
 	iEvent.put(electronMultiplicity,string8);
 	const std::string string9("photonEnergyFraction");
@@ -363,6 +360,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(ECorr,string27);
 	const std::string string28("isTightJetId");
 	iEvent.put(isTightJetId,string28);
+	const std::string string29("isTightLepVetoJetId");
+	iEvent.put(isTightLepVetoJetId,string29);
 		
 }
 

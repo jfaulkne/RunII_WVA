@@ -33,6 +33,7 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 
 //
 // class declaration
@@ -56,10 +57,13 @@ private:
         virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag PhoTag_;
 
+        void printCutFlowResult(vid::CutFlowResult &cutflow);
+
   // ID decisions objects
   edm::EDGetTokenT<edm::ValueMap<bool> > phoLooseIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoMediumIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoTightIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > phoTightIdFullInfoMapToken_;
 
 	// ----------member data ---------------------------
 };
@@ -79,7 +83,9 @@ private:
 Photon::Photon(const edm::ParameterSet& iConfig):
   phoLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoLooseIdMap"))),
   phoMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoMediumIdMap"))),
-  phoTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoTightIdMap")))
+  phoTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoTightIdMap"))),
+  phoTightIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >
+                               (iConfig.getParameter<edm::InputTag>("phoTightIdFullInfoMap")))
 {
 	PhoTag_ = iConfig.getParameter<edm::InputTag>("PhoTag");
 
@@ -110,6 +116,37 @@ Photon::Photon(const edm::ParameterSet& iConfig):
         produces<std::vector<bool> > (string5).setBranchAlias(string5);
         const std::string string6("isTight");
         produces<std::vector<bool> > (string6).setBranchAlias(string6);
+
+        const std::string string7("minPt");
+        produces<std::vector<double> > (string7).setBranchAlias(string7);
+        const std::string string8("phoSCEtaMultiRange");
+        produces<std::vector<double> > (string8).setBranchAlias(string8);
+        const std::string string9("phoSingleTowerHadOverEm");
+        produces<std::vector<double> > (string9).setBranchAlias(string9);
+        const std::string string10("phoFull5x5SigmaIEtaIEta");
+        produces<std::vector<double> > (string10).setBranchAlias(string10);
+        const std::string string11("phoAnyPFIsoWithEA");
+        produces<std::vector<double> > (string11).setBranchAlias(string11);
+        const std::string string12("phoAnyPFIsoWithEAAndExpoScaling");
+        produces<std::vector<double> > (string12).setBranchAlias(string12);
+        const std::string string13("phoAnyPFIsoWithEA1");
+        produces<std::vector<double> > (string13).setBranchAlias(string13);
+
+        const std::string string14("hasPixelSeed");
+        produces<std::vector<bool> > (string14).setBranchAlias(string14);
+        const std::string string15("passElectronVeto");
+        produces<std::vector<bool> > (string15).setBranchAlias(string15);
+        const std::string string16("photonIso");
+        produces<std::vector<double> > (string16).setBranchAlias(string16);
+        const std::string string17("neutralHadIso");
+        produces<std::vector<double> > (string17).setBranchAlias(string17);
+        const std::string string18("chargedHadIso");
+        produces<std::vector<double> > (string18).setBranchAlias(string18);
+        const std::string string19("puChargedHadIso");
+        produces<std::vector<double> > (string19).setBranchAlias(string19);
+        const std::string string20("sigmaIetaIeta");
+        produces<std::vector<double> > (string20).setBranchAlias(string20);
+
 }
 
 
@@ -141,6 +178,22 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::auto_ptr< std::vector<bool> > isMedium(new std::vector<bool>);
         std::auto_ptr< std::vector<bool> > isTight(new std::vector<bool>);
 
+        std::auto_ptr< std::vector<double> > minPt(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoSCEtaMultiRange(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoSingleTowerHadOverEm(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoFull5x5SigmaIEtaIEta(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEA(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEAAndExpoScaling(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEA1(new std::vector<double>);
+
+        std::auto_ptr< std::vector<bool> > passElectronVeto(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > hasPixelSeed(new std::vector<bool>);
+        std::auto_ptr< std::vector<double> > photonIso(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > neutralHadIso(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > chargedHadIso(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > puChargedHadIso(new std::vector<double>);
+        std::auto_ptr< std::vector<double> > sigmaIetaIeta(new std::vector<double>);
+
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
@@ -154,9 +207,11 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
 	edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
 	edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
+        edm::Handle<edm::ValueMap<vid::CutFlowResult> > tight_id_cutflow_data;
 	iEvent.getByToken(phoLooseIdMapToken_ ,loose_id_decisions);
 	iEvent.getByToken(phoMediumIdMapToken_,medium_id_decisions);
 	iEvent.getByToken(phoTightIdMapToken_,tight_id_decisions);
+        iEvent.getByToken(phoTightIdFullInfoMapToken_, tight_id_cutflow_data);
 
 	if( Photons.isValid() ) {
 		for(unsigned int i=0; i<Photons->size();i++)
@@ -165,6 +220,37 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  bool isPassLoose = (*loose_id_decisions)[ph];
 		  bool isPassMedium = (*medium_id_decisions)[ph];
 		  bool isPassTight = (*tight_id_decisions)[ph];
+
+		  bool PassElectronVeto = (pat::Photon(Photons->at(i))).passElectronVeto();
+		  bool HasPixelSeed = (pat::Photon(Photons->at(i))).hasPixelSeed();
+
+                  // Index of cut to mask (SigmaIetaIeta):
+                  const int cutIndexToMask = 3;//PhoFull5x5SigmaIEtaIEtaCut_0
+                  vid::CutFlowResult fullCutFlowData = (*tight_id_cutflow_data)[ph];
+                  vid::CutFlowResult maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+                  isPassTight = maskedCutFlowData.cutFlowPassed();
+                  //printf("Cut masked: %s\n", maskedCutFlowData.getNameAtIndex(cutIndexToMask).c_str());
+                  //printCutFlowResult(fullCutFlowData);
+
+                  minPt->push_back(fullCutFlowData.getValueCutUpon(0));
+                  phoSCEtaMultiRange->push_back(fullCutFlowData.getValueCutUpon(1));
+                  phoSingleTowerHadOverEm->push_back(fullCutFlowData.getValueCutUpon(2));
+                  phoFull5x5SigmaIEtaIEta->push_back(fullCutFlowData.getValueCutUpon(3));
+                  phoAnyPFIsoWithEA->push_back(fullCutFlowData.getValueCutUpon(4));
+                  phoAnyPFIsoWithEAAndExpoScaling->push_back(fullCutFlowData.getValueCutUpon(5));
+                  phoAnyPFIsoWithEA1->push_back(fullCutFlowData.getValueCutUpon(6));
+
+                  passElectronVeto->push_back(PassElectronVeto);
+                  hasPixelSeed->push_back(HasPixelSeed);
+                  photonIso->push_back(Photons->at(i).photonIso());
+                  neutralHadIso->push_back(Photons->at(i).neutralHadronIso());
+                  chargedHadIso->push_back(Photons->at(i).chargedHadronIso());
+                  puChargedHadIso->push_back(Photons->at(i).puChargedHadronIso());
+                  sigmaIetaIeta->push_back(Photons->at(i).sigmaIetaIeta());
+
+                  //std::cout << "Resulting table ... " << std::endl;
+                  //printCutFlowResult(maskedCutFlowData);
+                  //std::cout << "Result: " << isPassTight << std::endl;
 
 		  prodPho->push_back(pat::Photon(Photons->at(i)));
 		  isLoose->push_back( isPassLoose );
@@ -194,6 +280,37 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.put(isMedium,string5);
         const std::string string6("isTight");
         iEvent.put(isTight,string6);
+
+        const std::string string7("minPt");
+        iEvent.put(minPt,string7);
+        const std::string string8("phoSCEtaMultiRange");
+        iEvent.put(phoSCEtaMultiRange,string8);
+        const std::string string9("phoSingleTowerHadOverEm");
+        iEvent.put(phoSingleTowerHadOverEm,string9);
+        const std::string string10("phoFull5x5SigmaIEtaIEta");
+        iEvent.put(phoFull5x5SigmaIEtaIEta,string10);
+        const std::string string11("phoAnyPFIsoWithEA");
+        iEvent.put(phoAnyPFIsoWithEA,string11);
+        const std::string string12("phoAnyPFIsoWithEAAndExpoScaling");
+        iEvent.put(phoAnyPFIsoWithEAAndExpoScaling,string12);
+        const std::string string13("phoAnyPFIsoWithEA1");
+        iEvent.put(phoAnyPFIsoWithEA1,string13);
+
+        const std::string string14("hasPixelSeed");
+        iEvent.put(hasPixelSeed,string14);
+        const std::string string15("passElectronVeto");
+        iEvent.put(passElectronVeto,string15);
+        const std::string string16("photonIso");
+        iEvent.put(photonIso,string16);
+        const std::string string17("neutralHadIso");
+        iEvent.put(neutralHadIso,string17);
+        const std::string string18("chargedHadIso");
+        iEvent.put(chargedHadIso,string18);
+        const std::string string19("puChargedHadIso");
+        iEvent.put(puChargedHadIso,string19);
+        const std::string string20("sigmaIetaIeta");
+        iEvent.put(sigmaIetaIeta,string20);
+
 }
 
 
@@ -240,6 +357,25 @@ Photon::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 	edm::ParameterSetDescription desc;
 	desc.setUnknown();
 	descriptions.addDefault(desc);
+}
+
+// ------------ method to print Photon ID cut flow results --------------
+void Photon::printCutFlowResult(vid::CutFlowResult &cutflow){
+
+  printf("    CutFlow name= %s    decision is %d\n", 
+	 cutflow.cutFlowName().c_str(),
+	 (int) cutflow.cutFlowPassed());
+  int ncuts = cutflow.cutFlowSize();
+  printf(" Index                               cut name              isMasked    value-cut-upon     pass?\n");
+  for(int icut = 0; icut<ncuts; icut++){
+    printf("  %d       %50s    %d        %f          %d\n", icut,
+	   cutflow.getNameAtIndex(icut).c_str(),
+	   (int)cutflow.isCutMasked(icut),
+	   cutflow.getValueCutUpon(icut),
+	   (int)cutflow.getCutResultByIndex(icut));
+  }
+  printf("    WARNING: the value-cut-upon is bugged in 7.4.7, it is always 1.0\n");
+
 }
 
 //define this as a plug-in

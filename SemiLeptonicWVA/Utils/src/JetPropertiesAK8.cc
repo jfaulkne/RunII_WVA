@@ -31,6 +31,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
@@ -58,14 +59,19 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	edm::InputTag prunedJetTag_;
+	edm::InputTag softdropJetTag_;
 	std::string   btagname_;
         edm::InputTag RhoTag_;
   std::string l1file;
   std::string l2file;
   std::string l3file;
+  std::string l2l3file;
   bool doJEC;
+  bool doReclusteringForPrunedAndSoftdrop;
   //	edm::InputTag puppiJetTag_;
   double MinPt_;
+  JetCorrectorParameters *L2L3JetPar;
   //  std::vector<std::string> jecPayloadNames_;
 	
 	// ----------member data ---------------------------
@@ -87,12 +93,16 @@ JetPropertiesAK8::JetPropertiesAK8(const edm::ParameterSet& iConfig)
   //  jecPayloadNames_( iConfig.getParameter<std::vector<std::string> >("jecPayloadNames") ) // JEC level payloads
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	prunedJetTag_ = iConfig.getParameter<edm::InputTag>("prunedJetTag");
+	softdropJetTag_ = iConfig.getParameter<edm::InputTag>("softdropJetTag");
 	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
 	RhoTag_ = iConfig.getParameter<edm::InputTag>("RhoTag");
 	l1file = iConfig.getParameter<std::string>  ("L1File");
 	l2file = iConfig.getParameter<std::string>  ("L2File");
 	l3file = iConfig.getParameter<std::string>  ("L3File");
+	l2l3file = iConfig.getParameter<std::string>  ("L2L3File");
 	doJEC = iConfig.getParameter<bool>  ("doJEC");
+	doReclusteringForPrunedAndSoftdrop = iConfig.getParameter<bool>  ("doReclusteringForPrunedAndSoftdrop");
 	//puppiJetTag_ = iConfig.getParameter<edm::InputTag>("puppiJetTag");
         MinPt_ = iConfig.getParameter <double> ("MinPt");
 	//register your products
@@ -164,8 +174,10 @@ JetPropertiesAK8::JetPropertiesAK8(const edm::ParameterSet& iConfig)
         produces<std::vector<double> > (string27).setBranchAlias(string27);
 	const std::string string28("AK8isTightJetId");
 	produces<std::vector<bool> > (string28).setBranchAlias(string28);
-	//        const std::string string28("AK8puppiMass");
-        //produces<std::vector<double> > (string28).setBranchAlias(string28);
+	const std::string string29("mass");
+	produces<std::vector<double> > (string29).setBranchAlias(string29);
+	const std::string string30("AK8isTightLepVetoJetId");
+	produces<std::vector<bool> > (string30).setBranchAlias(string30);
 
 }
 
@@ -197,7 +209,6 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > AK8neutralHadronMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > AK8chargedEmEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > AK8neutralEmEnergyFraction(new std::vector<double>);
-// 	std::auto_ptr< std::vector<double> > AK8patJetsNeutralEmFractionPBNR(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > AK8electronEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > AK8electronMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > AK8photonEnergyFraction(new std::vector<double>);
@@ -213,18 +224,24 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<double> > AK8tau3(new std::vector<double>);
 	std::auto_ptr< std::vector<bool> > AK8isLooseJetId(new std::vector<bool>);
 	std::auto_ptr< std::vector<bool> > AK8isTightJetId(new std::vector<bool>);
+	std::auto_ptr< std::vector<bool> > AK8isTightLepVetoJetId(new std::vector<bool>);
 	std::auto_ptr< std::vector<double> > AK8bDiscriminatorCSV(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > AK8bDiscriminatorICSV(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > PtCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > EtaCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > PhiCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > ECorr(new std::vector<double>);
-	//	std::auto_ptr< std::vector<double> > AK8puppiMass(new std::vector<double>);
+	std::auto_ptr< std::vector<double> > mass(new std::vector<double>);
+
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByLabel(JetTag_,Jets);
+	edm::Handle< edm::View<pat::Jet> > prunedJets;
+	iEvent.getByLabel(prunedJetTag_,prunedJets);
+	edm::Handle< edm::View<pat::Jet> > softdropJets;
+	iEvent.getByLabel(softdropJetTag_,softdropJets);
 	edm::Handle<double> rho_ ;
         iEvent.getByLabel(RhoTag_, rho_);
 	//edm::Handle< edm::View<pat::Jet> > puppiJets;
@@ -232,12 +249,16 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	//  Load the JetCorrectorParameter objects into a vector, IMPORTANT: THE ORDER MATTERS HERE !!!! 
 	std::vector<JetCorrectorParameters> vPar;
+	std::vector<JetCorrectorParameters> vParMass;
 	/*	for ( std::vector<std::string>::const_iterator payloadBegin = jecPayloadNames_.begin(),
 		payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
 	  JetCorrectorParameters pars(*ipayload);
 	  vPar.push_back(pars);
 	  }*/
 		
+        if (l2l3file!="NONE")
+          L2L3JetPar  = new JetCorrectorParameters(l2l3file);
+	//	JetCorrectorParameters L3JetPar(*l3file);
 	JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(l3file);
 	JetCorrectorParameters *L2JetPar  = new JetCorrectorParameters(l2file);
 	JetCorrectorParameters *L1JetPar  = new JetCorrectorParameters(l1file);
@@ -245,9 +266,28 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	vPar.push_back(*L1JetPar);
 	vPar.push_back(*L2JetPar);
 	vPar.push_back(*L3JetPar);
+        if (l2l3file!="NONE")
+	  vPar.push_back(*L2L3JetPar);
+
+	vParMass.push_back(*L2JetPar);
+	vParMass.push_back(*L3JetPar);
+        if (l2l3file!="NONE")
+	  vParMass.push_back(*L2L3JetPar);
 	
 	FactorizedJetCorrector *JetCorrector = new FactorizedJetCorrector(vPar);
+	FactorizedJetCorrector *JetMassCorrector = new FactorizedJetCorrector(vParMass);
+	FactorizedJetCorrector *JetPrunedCorrector = new FactorizedJetCorrector(vParMass);
+	FactorizedJetCorrector *JetSoftdropCorrector = new FactorizedJetCorrector(vParMass);
 
+	TLorentzVector FatJet; 
+	pat::Jet prunedjet;
+	pat::Jet softdropjet;
+	TLorentzVector jetPruned; 
+	TLorentzVector jetSoftdrop; 	
+	reco::Candidate::LorentzVector uncorrJet;
+	reco::Candidate::LorentzVector uncorrPrunedJet;
+	reco::Candidate::LorentzVector uncorrSoftdropJet;
+	
 	if( Jets.isValid() ) {
 	  edm::View<pat::Jet>::const_iterator ijet = Jets->begin();
 	  //	  edm::View<pat::Jet>::const_iterator puppiJet = puppiJets->begin();
@@ -257,8 +297,8 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 		  bool looseJetId=false;
 		  bool tightJetId=false;
+		  bool tightLepVetoJetId=false;
 
-		  reco::Candidate::LorentzVector uncorrJet;
 		  // The pat::Jet "knows" if it has been corrected, so here
 		  // we can "uncorrect" the entire jet to apply the corrections
 		  // we want here.
@@ -277,43 +317,66 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  JetCorrector->setJetA(ijet->jetArea());
 		  JetCorrector->setRho(*(rho_.product())); 
 
-		  double correction = JetCorrector->getCorrection();
+		  
+		  JetMassCorrector->setJetEta(uncorrJet.eta());
+		  JetMassCorrector->setJetPt(uncorrJet.pt());
+		  JetMassCorrector->setJetA(ijet->jetArea());
+		  JetMassCorrector->setRho(*(rho_.product())); 
+		  
+
+		  double correction = 1.;
+		  double massCorrection = 1.;
+
+		  massCorrection = JetMassCorrector->getCorrection(); //do anyway the mass correction
+		  mass->push_back( massCorrection*uncorrJet.mass());
+		  
+		  if (doJEC) {
+		    correction = JetCorrector->getCorrection();
+		    //		    massCorrection = JetMassCorrector->getCorrection();
+		    //mass->push_back( massCorrection*uncorrJet.mass());
+		  }
+		  //		  else
+		  // mass->push_back( Jets->at(i).mass());
+		  
+		  //		  std::cout<<"DEBUG - AK8- raw pt: "<<uncorrJet.pt()<<" corr: "<<correction<<" corr pt: "<<correction*uncorrJet.pt()
+		  //			   <<" raw mass: "<<uncorrJet.mass()<<" massCorr: "<<massCorrection<<" corr mass: "<<massCorrection*uncorrJet.mass()<<std::endl;
+
 		  ijet++;
 	//	(Jets->at(i)).scaleEnergy(correction);
 	//	reco::Candidate::LorentzVector jet4V = correction*(Jets->at(i).p4());		  
-		   AK8prodJets->push_back(pat::Jet(Jets->at(i)));
+		  AK8prodJets->push_back(pat::Jet(Jets->at(i)));
+
 		  //	  AK8prodJets->push_back(reco::Candidate::LorentzVector(jet4V));
-		   if (doJEC) {
-		     PtCorr->push_back(correction*uncorrJet.pt());
-		     EtaCorr->push_back(correction*uncorrJet.eta());
-		     PhiCorr->push_back(correction*uncorrJet.phi());
-		     ECorr->push_back(correction*uncorrJet.e());
-		   }
-		   else {
-		     PtCorr->push_back(Jets->at(i).pt());
-		     EtaCorr->push_back(Jets->at(i).eta());
-		     PhiCorr->push_back(Jets->at(i).phi());
-		     ECorr->push_back(Jets->at(i).energy());
-		   }
-		   AK8jetArea->push_back( Jets->at(i).jetArea() );
-		   AK8chargedHadronEnergyFraction->push_back( Jets->at(i).chargedHadronEnergyFraction() );
-		   AK8chargedHadronMultiplicity->push_back( Jets->at(i).chargedHadronMultiplicity() );
-		   AK8neutralHadronEnergyFraction->push_back( Jets->at(i).neutralHadronEnergyFraction() );
-		   AK8neutralHadronMultiplicity->push_back( Jets->at(i).neutralHadronMultiplicity() );
-		   AK8chargedEmEnergyFraction->push_back( Jets->at(i).chargedEmEnergyFraction() );
-		   AK8neutralEmEnergyFraction->push_back( Jets->at(i).neutralEmEnergyFraction() );
-		   // 			AK8patJetsNeutralEmFractionPBNR->push_back( Jets->at(i).patJetsNeutralEmFractionPBNR() / Jets->at(i).jecFactor(0) );
-		   AK8electronEnergyFraction->push_back( Jets->at(i).electronEnergyFraction() );
-		   AK8electronMultiplicity->push_back( Jets->at(i).electronMultiplicity() );
-		   AK8photonEnergyFraction->push_back( Jets->at(i).photonEnergyFraction() );
-		   AK8photonMultiplicity->push_back( Jets->at(i).photonMultiplicity() );
-		   AK8muonEnergyFraction->push_back( Jets->at(i).muonEnergyFraction() );
-		   AK8muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
-		   
-		   AK8prunedMass->push_back( Jets->at(i).userFloat("ak8PFJetsCHSPrunedMass"));
-		   AK8softDropMass->push_back( Jets->at(i).userFloat("ak8PFJetsCHSSoftDropMass"));
-		   AK8trimmedMass->push_back( Jets->at(i).userFloat("ak8PFJetsCHSTrimmedMass"));
-		   AK8filteredMass->push_back( Jets->at(i).userFloat("ak8PFJetsCHSFilteredMass"));
+		  if (doJEC) {
+		    PtCorr->push_back(correction*uncorrJet.pt());
+		    EtaCorr->push_back(correction*uncorrJet.eta());
+		    PhiCorr->push_back(correction*uncorrJet.phi());
+		    ECorr->push_back(correction*uncorrJet.e());
+		  }
+		  else {
+		    PtCorr->push_back(Jets->at(i).pt());
+		    EtaCorr->push_back(Jets->at(i).eta());
+		    PhiCorr->push_back(Jets->at(i).phi());
+		    ECorr->push_back(Jets->at(i).energy());
+		  }
+		  AK8jetArea->push_back( Jets->at(i).jetArea() );
+		  AK8chargedHadronEnergyFraction->push_back( Jets->at(i).chargedHadronEnergyFraction() );
+		  AK8chargedHadronMultiplicity->push_back( Jets->at(i).chargedHadronMultiplicity() );
+		  AK8neutralHadronEnergyFraction->push_back( Jets->at(i).neutralHadronEnergyFraction() );
+		  AK8neutralHadronMultiplicity->push_back( Jets->at(i).neutralHadronMultiplicity() );
+		  AK8chargedEmEnergyFraction->push_back( Jets->at(i).chargedEmEnergyFraction() );
+		  AK8neutralEmEnergyFraction->push_back( Jets->at(i).neutralEmEnergyFraction() );
+		  // 			AK8patJetsNeutralEmFractionPBNR->push_back( Jets->at(i).patJetsNeutralEmFractionPBNR() / Jets->at(i).jecFactor(0) );
+		  AK8electronEnergyFraction->push_back( Jets->at(i).electronEnergyFraction() );
+		  AK8electronMultiplicity->push_back( Jets->at(i).electronMultiplicity() );
+		  AK8photonEnergyFraction->push_back( Jets->at(i).photonEnergyFraction() );
+		  AK8photonMultiplicity->push_back( Jets->at(i).photonMultiplicity() );
+		  AK8muonEnergyFraction->push_back( Jets->at(i).muonEnergyFraction() );
+		  AK8muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
+
+
+		  AK8trimmedMass->push_back( massCorrection*Jets->at(i).userFloat("ak8PFJetsCHSTrimmedMass"));
+		  AK8filteredMass->push_back( massCorrection*Jets->at(i).userFloat("ak8PFJetsCHSFilteredMass"));
 
 		   /*double dR=1000.;
 		   double tempMass=0.;
@@ -343,25 +406,123 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		   float CEMF = Jets->at(i).chargedEmEnergyFraction();
 		   int NumConst = Jets->at(i).chargedMultiplicity()+Jets->at(i).neutralMultiplicity();
 		   int CHM = Jets->at(i).chargedMultiplicity(); 
+                   int NumNeutralParticle = Jets->at(i).neutralMultiplicity();
 
-		   if ((NHF<0.99 && NEMF<0.99 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(Jets->at(i).eta())>2.4))  looseJetId=true;
-		   if ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(Jets->at(i).eta())>2.4))  tightJetId=true;
+                   if ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99)\
+                      || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) looseJetId=true;
 
-		   /*		   if (Jets->at(i).nConstituents() > 1 && //OLD JET LOOSE ID
-		       Jets->at(i).photonEnergyFraction() < 0.99 &&
-		       Jets->at(i).neutralHadronEnergyFraction() < 0.99 &&
-		       Jets->at(i).muonEnergyFraction() < 0.8 &&
-		       Jets->at(i).electronEnergyFraction() < 0.9 &&
-		       (Jets->at(i).chargedHadronMultiplicity() > 0 || fabs(Jets->at(i).eta())>2.4 ) &&
-		       (Jets->at(i).chargedEmEnergyFraction() < 0.99 || fabs(Jets->at(i).eta())>2.4 ) &&
-		       (Jets->at(i).chargedHadronEnergyFraction() > 0. || fabs(Jets->at(i).eta())>2.4 ) )
-		     looseJetId = true;
-		   */
+                   if ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0 && CEMF<0.99)\
+                      || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) tightJetId=true;
+
+                   if ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(Jets->at(i).eta())<=2.4 && CHF>0 && CHM>0\
+                      && CEMF<0.90) || abs(Jets->at(i).eta())>2.4) && abs(Jets->at(i).eta())<=3.0) tightLepVetoJetId=true;
+
+                   if (NEMF<0.90 && NumNeutralParticle>10 && abs(Jets->at(i).eta())>3.0) looseJetId=true;
+
+                   if (NEMF<0.90 && NumNeutralParticle>10 && abs(Jets->at(i).eta())>3.0) tightJetId=true;
+
 		   AK8isLooseJetId->push_back(looseJetId);
 		   AK8isTightJetId->push_back(tightJetId);
+		   AK8isTightLepVetoJetId->push_back(tightLepVetoJetId);
+
+		   if (doReclusteringForPrunedAndSoftdrop) {
+
+		     FatJet.SetPtEtaPhiE( Jets->at(i).pt(), Jets->at(i).eta(), Jets->at(i).phi(), Jets->at(i).energy() ); 
+
+		     float dRmin =  999. ;
+		     double softdropCorrection = 1.;
+		     double prunedCorrection = 1.;
+		     bool foundSoftdrop=false;
+		     bool foundPruned=false;
+
+		     if( softdropJets.isValid() && softdropJets->size()>0) {
+
+		       for (const pat::Jet &pj : *softdropJets) {
+			 jetSoftdrop.SetPtEtaPhiE( pj.pt(), pj.eta(), pj.phi(), pj.energy() );
+			 float dRtmp   = FatJet.DeltaR(jetSoftdrop);
+			 if( dRtmp < dRmin && dRtmp < 0.8 ){ dRmin = dRtmp; softdropjet = pj; foundSoftdrop=true; }
+			 else continue;
+		       }
+
+		       if (foundSoftdrop) {
+			 uncorrSoftdropJet= softdropjet.correctedP4(0);
+
+			 JetSoftdropCorrector->setJetEta(uncorrSoftdropJet.eta());
+			 JetSoftdropCorrector->setJetPt(uncorrSoftdropJet.pt());
+			 JetSoftdropCorrector->setJetA(softdropjet.jetArea());
+			 JetSoftdropCorrector->setRho(*(rho_.product())); 
+		       
+			 softdropCorrection = JetSoftdropCorrector->getCorrection();
+
+			 if (doJEC) 
+			   AK8softDropMass->push_back( softdropCorrection*uncorrSoftdropJet.mass());		       
+			 else 
+			   AK8softDropMass->push_back( 1.*uncorrSoftdropJet.mass());		       		     
+
+			 //			 std::cout<<"DEBUG - SD- raw pt: "<<uncorrSoftdropJet.pt()
+			 // <<" raw mass: "<<uncorrSoftdropJet.mass()<<" massCorr: "<<softdropCorrection<<" corr mass: "
+			 //	  <<softdropCorrection*uncorrSoftdropJet.mass()<<std::endl;
+		       }
+		       else
+			 AK8softDropMass->push_back( -1.);		       		     
+		     }
+		     else
+			 AK8softDropMass->push_back( -1.);		       		     
+
+		     //		     FatJet.SetPtEtaPhiE( Jets->at(i).pt(), Jets->at(i).eta(), Jets->at(i).phi(), Jets->at(i).energy() ); 
+
+		     dRmin =  999. ;
+
+		     if( prunedJets.isValid() && prunedJets->size()>0) {
+
+		       for (const pat::Jet &pj : *prunedJets) {
+			 jetPruned.SetPtEtaPhiE( pj.pt(), pj.eta(), pj.phi(), pj.energy() );
+			 float dRtmp   = FatJet.DeltaR(jetPruned);
+			 if( dRtmp < dRmin && dRtmp < 0.8 ){ dRmin = dRtmp; prunedjet = pj; foundPruned=true;}
+			 else continue;
+		       }
+
+		       if (foundPruned) {
+			 uncorrPrunedJet= prunedjet.correctedP4(0);
+		       
+			 JetPrunedCorrector->setJetEta(uncorrPrunedJet.eta());
+			 JetPrunedCorrector->setJetPt(uncorrPrunedJet.pt());
+			 JetPrunedCorrector->setJetA(prunedjet.jetArea());
+			 JetPrunedCorrector->setRho(*(rho_.product())); 
+
+			 prunedCorrection = JetPrunedCorrector->getCorrection();
+
+			 if (doJEC) 
+			   AK8prunedMass->push_back( prunedCorrection*uncorrPrunedJet.mass());
+			 else 
+			   AK8prunedMass->push_back( 1.*uncorrPrunedJet.mass());
+		       }
+		       else
+			 AK8prunedMass->push_back( -1.);		       		     
+
+		       //			 std::cout<<"DEBUG - PR- raw pt: "<<uncorrPrunedJet.pt()
+		       //  <<" raw mass: "<<uncorrPrunedJet.mass()<<" massCorr: "<<prunedCorrection<<" corr mass: "
+		       //	  <<softdropCorrection*uncorrPrunedJet.mass()<<std::endl;
+
+		     }
+		     else
+			 AK8prunedMass->push_back( -1.);		       		     
+
+		     //		     std::cout<<prunedCorrection<<" "<<Jets->at(i).pt()<<" "<<Jets->at(i).mass()<<" "<<prunedjet.pt()<<" "<<prunedjet.mass()<<" "<<uncorrPrunedJet.pt()<<" "<<uncorrPrunedJet.mass()<<std::endl; getchar();
+
+		   }
+
+		   else {
+		     AK8prunedMass->push_back( massCorrection*Jets->at(i).userFloat("ak8PFJetsCHSPrunedMass"));
+		     AK8softDropMass->push_back( massCorrection*Jets->at(i).userFloat("ak8PFJetsCHSSoftDropMass"));
+		   }
+
 		}
 	}
 	delete JetCorrector;
+	delete JetMassCorrector;
+	delete JetPrunedCorrector;
+	delete JetSoftdropCorrector;
 	delete L1JetPar;
 	delete L2JetPar;
 	delete L3JetPar;
@@ -425,8 +586,10 @@ JetPropertiesAK8::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(ECorr,string27);
 	const std::string string28("AK8isTightJetId");
 	iEvent.put(AK8isTightJetId,string28);
-	//	const std::string string28("AK8puppiMass");
-	//iEvent.put(AK8puppiMass,string28);
+	const std::string string30("AK8isTightLepVetoJetId");
+	iEvent.put(AK8isTightLepVetoJetId,string30);
+	const std::string string29("mass");
+	iEvent.put(mass,string29);
 	
 }
 

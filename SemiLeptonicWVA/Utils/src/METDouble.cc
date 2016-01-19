@@ -38,6 +38,7 @@
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrectorCalculator.h"
 
+#include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 //
 // class declaration
 //
@@ -70,7 +71,9 @@ private:
   std::string l1file;
   std::string l2file;
   std::string l3file;
+  std::string l2l3file;
   bool doJEC;
+  JetCorrectorParameters *L2L3JetPar;
 
 	// ----------member data ---------------------------
 };
@@ -100,9 +103,15 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
 	l1file = iConfig.getParameter<std::string> ("L1File");
 	l2file = iConfig.getParameter<std::string> ("L2File");
 	l3file = iConfig.getParameter<std::string> ("L3File");
+	l2l3file = iConfig.getParameter<std::string> ("L2L3File");
 	
 	produces<double>("Pt");
 	produces<double>("Phi");
+	produces<double>("PtDefault"); produces<double>("PhiDefault");
+	produces<double>("PtType1"); produces<double>("PhiType1");
+	produces<double>("PtType1XYSmear"); produces<double>("PhiType1XYSmear");
+	produces<double>("PtType1XY"); produces<double>("PhiType1XY");
+	produces<double>("PtType1Smear"); produces<double>("PhiType1Smear");
 	produces<double>("PtRaw");
 	produces<double>("PhiRaw");
 	produces<double>("CaloMetPt");
@@ -140,6 +149,11 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	double metpt_=0, metphi_=0;
+	double defaultmetpt_=0, defaultmetphi_=0;
+        double txyt1smetpt_=0, txyt1smetphi_=0;
+        double t1smetpt_=0, t1smetphi_=0;
+        double t1xymetpt_=0, t1xymetphi_=0;
+        double t1metpt_=0, t1metphi_=0;
 	double rawmetpt_=0, rawmetphi_=0;
 	double calometpt_=0, calometphi_=0;
 	edm::Handle< edm::View<pat::MET> > MET;
@@ -162,6 +176,8 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::vector<JetCorrectorParameters> vParL1;
 	//	vParL1.push_back(JetCorrectorParameters(jecPayloadNames_[0]));
 	
+        if (l2l3file!="NONE")
+          L2L3JetPar  = new JetCorrectorParameters(l2l3file);
 	JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(l3file);
 	JetCorrectorParameters *L2JetPar  = new JetCorrectorParameters(l2file);
 	JetCorrectorParameters *L1JetPar  = new JetCorrectorParameters(l1file);
@@ -169,6 +185,8 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	vPar.push_back(*L1JetPar);
 	vPar.push_back(*L2JetPar);
 	vPar.push_back(*L3JetPar);
+        if (l2l3file!="NONE")
+	  vPar.push_back(*L2L3JetPar);
 	vParL1.push_back(*L1JetPar);
 
 	FactorizedJetCorrector *JetCorrector = new FactorizedJetCorrector(vPar);
@@ -184,8 +202,10 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  bool skipEM_ = true;
 	  double skipEMfractionThreshold_ = 0.9;
 	  bool skipMuons_ = true;
-	  //double jetCorrEtaMax_ = 9.9;
-	  double type1JetPtThreshold_ = 10.0;
+	  double jetCorrEtaMax_ = 9.9;
+	  double type1JetPtThreshold_ = 15.0;
+	  std::string skipMuonSelection_string = "isGlobalMuon | isStandAloneMuon";
+	  StringCutObjectSelector<reco::Candidate>* skipMuonSelection_ = new StringCutObjectSelector<reco::Candidate>(skipMuonSelection_string,true);
 
 	  edm::View<pat::Jet>::const_iterator ijet = Jets->begin()-1;
 	  for (const pat::Jet &jet : *Jets) {
@@ -206,7 +226,10 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      uncorrJet = ijet->p4();
 	    }
 	    
-	    JetCorrector->setJetEta(uncorrJet.eta());
+            if (fabs(uncorrJet.eta()) < jetCorrEtaMax_)
+              JetCorrector->setJetEta(uncorrJet.eta());
+            else
+              JetCorrector->setJetEta(TMath::Sign(1.,uncorrJet.eta())*jetCorrEtaMax_);
 	    JetCorrector->setJetPt(uncorrJet.pt());
 	    JetCorrector->setJetA(ijet->jetArea());
 	    JetCorrector->setRho(*(rho_.product())); 
@@ -217,7 +240,21 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if ( skipEM_ && emEnergyFraction > skipEMfractionThreshold_ ) continue;
 	    
 	    reco::Candidate::LorentzVector rawJetP4 = jet.correctedP4(0);
-	    
+
+	    //	    if ( skipMuons_ && jet.muonMultiplicity() != 0 ) {
+	    if ( skipMuons_ ) {
+	      const std::vector<reco::CandidatePtr> & cands = jet.daughterPtrVector();
+	      for ( std::vector<reco::CandidatePtr>::const_iterator cand = cands.begin();
+		    cand != cands.end(); ++cand ) {
+		const reco::PFCandidate *pfcand = dynamic_cast<const reco::PFCandidate *>(cand->get());
+		const reco::Candidate *mu = (pfcand != 0 ? ( pfcand->muonRef().isNonnull() ? pfcand->muonRef().get() : 0) : cand->get());
+		if ( mu != 0 &&  (*skipMuonSelection_)(*mu) ) {
+		  reco::Candidate::LorentzVector muonP4 = (*cand)->p4();
+		  rawJetP4 -= muonP4;
+		}
+	      }
+	    }
+	    /*	    
 	    if ( skipMuons_ && jet.muonMultiplicity() != 0 ) {
 	      for (const pat::Muon &muon : *Muons) {
 		if( !muon.isGlobalMuon() && !muon.isStandAloneMuon() ) continue;
@@ -228,13 +265,16 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  rawJetP4 -= muonP4;
 		}
 	      }
-	    }
+	      } */
 
 	    reco::Candidate::LorentzVector corrJetP4 = corr*rawJetP4;
 
-	    if ( corrJetP4.pt() > type1JetPtThreshold_ ) {
+	    if ( corrJetP4.pt() > type1JetPtThreshold_) {
 	      reco::Candidate::LorentzVector tmpP4 = jet.correctedP4(0);
-	      JetCorrectorL1->setJetEta(tmpP4.eta());
+              if (fabs(tmpP4.eta()) < jetCorrEtaMax_)
+                JetCorrectorL1->setJetEta(tmpP4.eta());
+              else
+                JetCorrectorL1->setJetEta(TMath::Sign(1.,tmpP4.eta())*jetCorrEtaMax_);
 	      JetCorrectorL1->setJetPt(tmpP4.pt());
 	      JetCorrectorL1->setJetA(ijet->jetArea());
 	      JetCorrectorL1->setRho(*(rho_.product())); 
@@ -249,9 +289,13 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
 	  //	  pat::MET pmet = pat::MET( &*(MET->at(0)) );
 
-	  const float rawPt = MET->at(0).shiftedPt(pat::MET::NoShift, pat::MET::Raw);
-	  const float rawPhi = MET->at(0).shiftedPhi(pat::MET::NoShift, pat::MET::Raw);
+	  //const float rawPt = MET->at(0).shiftedPt(pat::MET::NoShift, pat::MET::Raw);
+	  //const float rawPhi = MET->at(0).shiftedPhi(pat::MET::NoShift, pat::MET::Raw);
 	  //	  const float rawSumEt = MET->at(0).shiftedSumEt(pat::MET::NoShift, pat::MET::Raw);
+	  const float rawPt = MET->at(0).uncorPt();//met.shiftedPt(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
+	  const float rawPhi   = MET->at(0).uncorPhi();//met.shiftedPhi(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
+	  //	  const float rawSumEt = met.uncorSumEt();//met.shiftedSumEt(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
+
 	  TVector2 rawMET_;
 	  rawMET_.SetMagPhi (rawPt, rawPhi );
 	  Double_t rawPx = rawMET_.Px();
@@ -268,6 +312,11 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  metphi_ = corrmet.Phi();
 	  rawmetpt_ = rawPt;
 	  rawmetphi_ = rawPhi;
+          defaultmetpt_ = MET->at(0).pt(); defaultmetphi_ = MET->at(0).phi();
+          txyt1smetpt_ = MET->at(0).corPt(pat::MET::Type1SmearXY); txyt1smetphi_ = MET->at(0).corPhi(pat::MET::Type1SmearXY);
+          t1xymetpt_ = MET->at(0).corPt(pat::MET::Type1XY); t1xymetphi_ = MET->at(0).corPhi(pat::MET::Type1XY);
+          t1smetpt_ = MET->at(0).corPt(pat::MET::Type1Smear); t1smetphi_ = MET->at(0).corPhi(pat::MET::Type1Smear);
+          t1metpt_ = MET->at(0).corPt(); t1metphi_ = MET->at(0).corPhi();
 
 	  //	  std::cout<<"corrEx: "<<corrEx<<" rawPx: "<<rawPx<<" raw met: "<<rawPt<<" new met: "<<et<<std::endl;
 	  //metcorrPx_ = corrEx;
@@ -281,6 +330,8 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    metphi_=MET->at(0).phi();
 	    rawmetpt_ = MET->at(0).pt();
 	    rawmetphi_ = MET->at(0).phi();
+            defaultmetpt_ = txyt1smetpt_ = t1metpt_ = t1xymetpt_ = t1smetpt_ = metpt_;
+            defaultmetphi_ = txyt1smetphi_ = t1metphi_ = t1xymetphi_ = t1smetphi_ = metphi_;
 	    calometpt_ = MET->at(0).caloMETPt();
 	    calometphi_ = MET->at(0).caloMETPhi();
 	  }	
@@ -305,6 +356,26 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(htp5,"CaloMetPt");
 	std::auto_ptr<double> htp6(new double(calometphi_));
 	iEvent.put(htp6,"CaloMetPhi");
+	std::auto_ptr<double> htp7(new double(defaultmetpt_));
+	iEvent.put(htp7,"PtDefault");
+	std::auto_ptr<double> htp8(new double(defaultmetphi_));
+	iEvent.put(htp8,"PhiDefault");
+	std::auto_ptr<double> htp9(new double(t1metpt_));
+	iEvent.put(htp9,"PtType1");
+	std::auto_ptr<double> htp10(new double(t1metphi_));
+	iEvent.put(htp10,"PhiType1");
+	std::auto_ptr<double> htp11(new double(txyt1smetpt_));
+	iEvent.put(htp11,"PtType1XYSmear");
+	std::auto_ptr<double> htp12(new double(txyt1smetphi_));
+	iEvent.put(htp12,"PhiType1XYSmear");
+	std::auto_ptr<double> htp13(new double(t1xymetpt_));
+	iEvent.put(htp13,"PtType1XY");
+	std::auto_ptr<double> htp14(new double(t1xymetphi_));
+	iEvent.put(htp14,"PhiType1XY");
+	std::auto_ptr<double> htp15(new double(t1smetpt_));
+	iEvent.put(htp15,"PtType1Smear");
+	std::auto_ptr<double> htp16(new double(t1smetphi_));
+	iEvent.put(htp16,"PhiType1Smear");
 	
 }
 

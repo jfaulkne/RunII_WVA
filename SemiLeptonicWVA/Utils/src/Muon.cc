@@ -180,7 +180,6 @@ Muon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.getByLabel(RhoTag_, rho_);
 
 	if( Muons.isValid() ) {
-	  //	  std::cout<<"Muoni: "<<Muons->size()<<std::endl;
 		for(unsigned int i=0; i<Muons->size();i++)
 		{
 		  if (Muons->at(i).pt()<MinPt_) continue;
@@ -191,7 +190,6 @@ Muon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   bool isTightId = Muons->at(i).isTightMuon(Vertices->at(0));
 		  bool isPF = Muons->at(i).isPFMuon();
 		
-		  //if( !isHighPtId ) continue;
 		  prodMu->push_back(pat::Muon(Muons->at(i)));
 		  isHighPt->push_back( isHighPtId );
 		  isLoose->push_back( isLooseId );
