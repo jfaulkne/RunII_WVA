@@ -32,10 +32,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-// Patricia
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
-// end Patricia   
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
@@ -63,10 +61,10 @@ private:
 
   edm::EDGetTokenT< GenEventInfoProduct > geneventToken_; 
   edm::EDGetTokenT<std::vector< PileupSummaryInfo > > PUInfoToken_;
-  //Patricia
+  
   edm::EDGetTokenT< LHEEventProduct > lheeventToken_;
   edm::EDGetTokenT< GenRunInfoProduct > genrunToken_;
-  //end Patricia
+  
   edm::LumiReWeighting  LumiWeights_;
 	// ----------member data ---------------------------
 };
@@ -86,10 +84,6 @@ private:
 GenEventInfo::GenEventInfo(const edm::ParameterSet& iConfig):
   geneventToken_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("geneventToken"))),
   PUInfoToken_(consumes<std::vector< PileupSummaryInfo > >(iConfig.getParameter<edm::InputTag>("PUInfoToken")))
-  //Patricia
-  //  lheeventToken_(consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("externalLHEProducer")))
-  //  genrunToken_(consumes<GenRunInfoProduct>(iConfig.getParameter<edm::InputTag>("genrunToken")))
-  //end Patricia
 {
 
 	produces<double>("genEventWeight");
@@ -277,7 +271,6 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
 
-	//Patricia
 
 	edm::Handle< LHEEventProduct > LHEEventInfo;
         iEvent.getByLabel("externalLHEProducer", LHEEventInfo);
@@ -292,7 +285,7 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    genweights.push_back(weightsTemp.at(i).wgt);
 	  }
 	}
-	  //end Patricia
+
 
 	std::auto_ptr<double> htpw(new double(PUWeight));
 	iEvent.put(htpw,"PUWeight");
@@ -302,11 +295,6 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	std::auto_ptr<double> htp(new double(eventWeight));
 	iEvent.put(htp,"genEventWeight");
-
-	//Patricia
-	//	std::auto_ptr<int> htpg(new int(originalWeight));
-	//iEvent.put(htpg,"originalWeight");
-	//end Patricia
 
 }
 
