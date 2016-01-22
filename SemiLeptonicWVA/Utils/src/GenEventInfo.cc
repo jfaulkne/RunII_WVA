@@ -89,6 +89,8 @@ GenEventInfo::GenEventInfo(const edm::ParameterSet& iConfig):
 	produces<double>("genEventWeight");
 	produces<double>("PUWeight");
 	produces<int>("npT");
+        produces<double>("originalWeight");
+        produces<std::vector<double>>("AQGCweights");
 
 	float PU_data_f[52] = {
 	  0 ,
