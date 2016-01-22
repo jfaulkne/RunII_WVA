@@ -32,6 +32,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
@@ -57,9 +59,13 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
-  edm::EDGetTokenT< GenEventInfoProduct > geneventToken_; 
-  edm::EDGetTokenT<std::vector< PileupSummaryInfo > > PUInfoToken_;
-  edm::LumiReWeighting  LumiWeights_;
+  	edm::EDGetTokenT< GenEventInfoProduct > geneventToken_; 
+  	edm::EDGetTokenT<std::vector< PileupSummaryInfo > > PUInfoToken_;
+  
+  	edm::EDGetTokenT< LHEEventProduct > lheeventToken_;
+  	edm::EDGetTokenT< GenRunInfoProduct > genrunToken_;
+  
+  	edm::LumiReWeighting  LumiWeights_;
 	// ----------member data ---------------------------
 };
 
@@ -83,6 +89,8 @@ GenEventInfo::GenEventInfo(const edm::ParameterSet& iConfig):
 	produces<double>("genEventWeight");
 	produces<double>("PUWeight");
 	produces<int>("npT");
+        produces<double>("originalWeight");
+        produces<std::vector<double>>("AQGCweights");
 
 	float PU_data_f[52] = {
 	  0 ,
@@ -264,6 +272,23 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  PUWeight = LumiWeights_.weight( Tnpv );
 	}
 
+
+
+	edm::Handle< LHEEventProduct > LHEEventInfo;
+        iEvent.getByLabel("source", LHEEventInfo);
+
+	std::vector<double> AQGCweights;
+        double originalWeight=-1;
+
+	if (LHEEventInfo.isValid()){
+	  auto weightsTemp = LHEEventInfo ->weights();
+	  originalWeight = LHEEventInfo ->originalXWGTUP();
+	  for (unsigned int i = 0; i < weightsTemp.size(); i++){
+	    AQGCweights.push_back(weightsTemp.at(i).wgt);
+	  }
+	}
+
+
 	std::auto_ptr<double> htpw(new double(PUWeight));
 	iEvent.put(htpw,"PUWeight");
 
@@ -272,7 +297,12 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	std::auto_ptr<double> htp(new double(eventWeight));
 	iEvent.put(htp,"genEventWeight");
+    
+    	std::auto_ptr<double> owp(new double(originalWeight));
+    	iEvent.put(owp,"originalWeight");
 
+    	std::auto_ptr<std::vector<double>> gwp(new std::vector<double>(AQGCweights));
+    	iEvent.put(gwp,"AQGCweights");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
