@@ -278,11 +278,11 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.getByLabel("source", LHEEventInfo);
 
 	std::vector<double> AQGCweights;
-        double originalWeight;
+        double originalWeight=-1;
 
 	if (LHEEventInfo.isValid()){
 	  auto weightsTemp = LHEEventInfo ->weights();
-	  originalWeight *= LHEEventInfo ->originalXWGTUP();
+	  originalWeight = LHEEventInfo ->originalXWGTUP();
 	  for (unsigned int i = 0; i < weightsTemp.size(); i++){
 	    AQGCweights.push_back(weightsTemp.at(i).wgt);
 	  }
