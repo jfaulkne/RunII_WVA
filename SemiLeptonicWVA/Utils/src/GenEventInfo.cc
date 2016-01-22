@@ -273,7 +273,7 @@ GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 	edm::Handle< LHEEventProduct > LHEEventInfo;
-        iEvent.getByLabel("externalLHEProducer", LHEEventInfo);
+        iEvent.getByLabel("source", LHEEventInfo);
 
 	std::vector<float> genweights;
         float originalWeight;
