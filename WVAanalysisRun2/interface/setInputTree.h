@@ -41,6 +41,8 @@ public :
    Float_t         Weight;
    Float_t	   genEventWeight;
    Float_t         PUWeight;
+   Float_t         originalWeight;
+   Float_t         AQGCweights;
    Float_t         MHT;
    Float_t         METPt;
    Float_t         METPhi;
@@ -230,6 +232,8 @@ public :
    TBranch        *b_Weight;   //!
    TBranch        *b_PUWeight;   //!
    TBranch	  *b_genEventWeight;
+   TBranch        *b_originalWeight;   //!                                                                           
+   TBranch        *b_AQGCweights;
    TBranch        *b_MHT;   //!
    TBranch        *b_METPt;   //!
    TBranch        *b_METPhi;   //!
