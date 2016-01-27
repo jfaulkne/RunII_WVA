@@ -41,8 +41,7 @@ public :
    Float_t         Weight;
    Float_t	   genEventWeight;
    Float_t         PUWeight;
-   Float_t         originalWeight;
-   Float_t         AQGCweights;
+   Double_t         originalWeight;
    Float_t         MHT;
    Float_t         METPt;
    Float_t         METPhi;
@@ -208,7 +207,8 @@ public :
    UChar_t	   Photons_isLoose[7];
    UChar_t	   Photons_isMedium[7];
    UChar_t	   Photons_isTight[7];
-
+   
+   std::vector<double>  *AQGCweights;
    std::vector<int>     *TriggerProducerTriggerPrescales;
    std::vector<unsigned int> *TriggerProducerTriggerPass;
    std::vector<std::string>  *TriggerProducerTriggerNames;
