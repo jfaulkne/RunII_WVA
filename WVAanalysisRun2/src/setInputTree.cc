@@ -66,7 +66,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
    fChain->SetBranchAddress("genEventWeight", &genEventWeight, &b_genEventWeight);
    fChain->SetBranchAddress("originalWeight", &originalWeight, &b_originalWeight);
-   fChain->SetBranchAddress("AQGCweights", &AQGCweights, &b_AQGCweights);
+   fChain->SetBranchAddress("GenEventInfoAQGCweights", &AQGCweights, &b_AQGCweights);
    fChain->SetBranchAddress("passFilterHBHE", &passFilterHBHE, &b_passFilterHBHE);
    fChain->SetBranchAddress("passFilterHBHEIso", &passFilterHBHEIso, &b_passFilterHBHEIso);
    fChain->SetBranchAddress("passFilterCSCHalo", &passFilterCSCHalo, &b_passFilterCSCHalo);
