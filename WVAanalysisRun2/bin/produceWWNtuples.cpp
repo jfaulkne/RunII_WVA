@@ -744,9 +744,12 @@ int main (int argc, char** argv)
 	  deltaPhiOld = deltaPhi;
 	}		
       }
-    
+    //Pass along the AQGC weights:
+	WWTree->originalWeight = ReducedTree->originalWeight;
+	WWTree->AQGCweights = *(ReducedTree->AQGCweights);
     //fill the tree
     outTree->Fill();
+    
   }
 
   std::cout<<"\nTotal Events:		"<<ReducedTree->fChain->GetEntries()<<std::endl
