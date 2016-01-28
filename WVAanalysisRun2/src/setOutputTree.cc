@@ -88,6 +88,8 @@ void setOutputTree::initializeVariables()
   photon_eta=-999;
   photon_phi=-999;
   photon_e=-999;
+  
+  AQGCweights.clear();
 
 }
 
