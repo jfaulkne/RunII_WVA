@@ -103,7 +103,7 @@ void setOutputTree::setBranches()
   fTree->Branch("isBoostedSignal",&isBoostedSignal,"isBoostedSignal/I");
   fTree->Branch("wSampleWeight",&wSampleWeight,"wSampleWeight/F");
   fTree->Branch("genWeight",&genWeight,"genWeight/F");
-  fTree->Branch("originalWeight",&originalWeight,"originalWeight/D");
+  fTree->Branch("originalWeight",&originalWeight,"originalWeight/F");
   fTree->Branch("AQGCweights",&AQGCweights);
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("eff_and_pu_Weight",&eff_and_pu_Weight,"eff_and_pu_Weight/F");
