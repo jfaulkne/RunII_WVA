@@ -19,6 +19,7 @@ void setOutputTree::initializeVariables()
   isBoostedSignal=-999;
   wSampleWeight=-999;
   genWeight=1;
+  originalWeight=-1;
   totalEventWeight=-999;
   totalEventWeight_2=-999;
   eff_and_pu_Weight=-999;
@@ -87,6 +88,8 @@ void setOutputTree::initializeVariables()
   photon_eta=-999;
   photon_phi=-999;
   photon_e=-999;
+  
+  AQGCweights.clear();
 
 }
 
@@ -100,6 +103,8 @@ void setOutputTree::setBranches()
   fTree->Branch("isBoostedSignal",&isBoostedSignal,"isBoostedSignal/I");
   fTree->Branch("wSampleWeight",&wSampleWeight,"wSampleWeight/F");
   fTree->Branch("genWeight",&genWeight,"genWeight/F");
+  fTree->Branch("originalWeight",&originalWeight,"originalWeight/F");
+  fTree->Branch("AQGCweights",&AQGCweights);
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("eff_and_pu_Weight",&eff_and_pu_Weight,"eff_and_pu_Weight/F");
   fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");
