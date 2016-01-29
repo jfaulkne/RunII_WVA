@@ -41,7 +41,7 @@ public :
    Float_t         Weight;
    Float_t	   genEventWeight;
    Float_t         PUWeight;
-   Double_t         originalWeight;
+   Float_t         originalWeight;
    Float_t         MHT;
    Float_t         METPt;
    Float_t         METPhi;
