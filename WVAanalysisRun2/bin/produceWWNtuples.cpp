@@ -773,8 +773,8 @@ int main (int argc, char** argv)
     WWTree->vbf_maxpt_jj_phi = TOT.Phi();
 
     //Pass along the AQGC weights:
-    WWTree->OriginalWeight = ReducedTree->originalWeight;
-    WWTree->aQGCweights = *(ReducedTree->AQGCweights);
+    WWTree->originalWeight = ReducedTree->originalWeight;
+    WWTree->AQGCweights = *(ReducedTree->AQGCweights);
 
     //fill the tree
     outTree->Fill();
