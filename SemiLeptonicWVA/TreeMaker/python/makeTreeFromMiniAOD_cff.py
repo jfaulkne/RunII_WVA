@@ -86,6 +86,7 @@ isCrab=False):
             'HLT_Ele22_eta2p1_WPTight_Gsf_v',
             'HLT_IsoMu20_v',
             'HLT_IsoTkMu20_v',
+	    'HLT_Ele27_WP85_Gsf_v'
             )
         )
 
@@ -732,8 +733,8 @@ isCrab=False):
     process.TreeMaker2.VarsDouble.extend(['MET:PtDefault(METPtDefault)','MET:PhiDefault(METPhiDefault)','MET:PtType1(METPtType1)','MET:PhiType1(METPhiType1)','MET:PtType1XYSmear(METPtType1XYSmear)','MET:PhiType1XYSmear(METPhiType1XYSmear)','MET:PtType1Smear(METPtType1Smear)','MET:PhiType1Smear(METPhiType1Smear)','MET:PtType1XY(METPtType1XY)','MET:PhiType1XY(METPhiType1XY)'])
     process.TreeMaker2.VectorBool.extend(['TriggerProducer:TriggerPass'])
     process.TreeMaker2.VectorInt.extend(['TriggerProducer:TriggerPrescales'])
-    process.TreeMaker2.VectorString.extend(['TriggerProducer:TriggerNames'])
     process.TreeMaker2.VectorDouble.extend(['GenEventInfo:AQGCweights'])
+    process.TreeMaker2.VectorString.extend(['TriggerProducer:TriggerNames'])
 
     ## --- Final paths ----------------------------------------------------
     process.out = cms.OutputModule("PoolOutputModule",
