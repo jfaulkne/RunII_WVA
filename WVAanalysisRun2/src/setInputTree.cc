@@ -142,6 +142,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("JetsTLorentzVector", JetsTLorentzVector, &b_JetsTLorentzVector);
    fChain->SetBranchAddress("Jets_bDiscriminatorICSV", Jets_bDiscriminatorICSV, &b_Jets_bDiscriminatorICSV);
    fChain->SetBranchAddress("Jets_bDiscriminatorCSV", Jets_bDiscriminatorCSV, &b_Jets_bDiscriminatorCSV);
+   fChain->SetBranchAddress("Jets_PUJetID", Jets_PUJetID, &b_Jets_PUJetID);
    fChain->SetBranchAddress("Jets_chargedEmEnergyFraction", Jets_chargedEmEnergyFraction, &b_Jets_chargedEmEnergyFraction);
    fChain->SetBranchAddress("Jets_chargedHadronEnergyFraction", Jets_chargedHadronEnergyFraction, &b_Jets_chargedHadronEnergyFraction);
    fChain->SetBranchAddress("Jets_chargedHadronMultiplicity", Jets_chargedHadronMultiplicity, &b_Jets_chargedHadronMultiplicity);

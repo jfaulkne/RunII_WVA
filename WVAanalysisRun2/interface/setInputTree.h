@@ -109,6 +109,7 @@ public :
    Float_t         JetsTLorentzVector[26];   //[JetsNum]
    Float_t         Jets_bDiscriminatorICSV[26];   //[JetsNum]
    Float_t         Jets_bDiscriminatorCSV[26];   //[JetsNum]
+   Float_t         Jets_PUJetID[26];   //[JetsNum]
    Float_t         Jets_chargedEmEnergyFraction[26];   //[JetsNum]
    Float_t         Jets_chargedHadronEnergyFraction[26];   //[JetsNum]
    Int_t           Jets_chargedHadronMultiplicity[26];   //[JetsNum]
@@ -301,6 +302,7 @@ public :
    TBranch        *b_JetsTLorentzVector;   //!
    TBranch        *b_Jets_bDiscriminatorICSV;   //!
    TBranch        *b_Jets_bDiscriminatorCSV;   //!
+   TBranch        *b_Jets_PUJetID;   //!
    TBranch        *b_Jets_chargedEmEnergyFraction;   //!
    TBranch        *b_Jets_chargedHadronEnergyFraction;   //!
    TBranch        *b_Jets_chargedHadronMultiplicity;   //!
