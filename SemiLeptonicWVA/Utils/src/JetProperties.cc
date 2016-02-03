@@ -154,7 +154,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	const std::string string29("isTightLepVetoJetId");
 	produces<std::vector<bool> > (string29).setBranchAlias(string29);
 	const std::string string30("PUJetID");
-	produces<std::vector<float> > (string30).setBranchAlias(string30);
+	produces<std::vector<double> > (string30).setBranchAlias(string30);
 }
 
 
@@ -200,7 +200,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<double> > EtaCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > PhiCorr(new std::vector<double>);
 	std::auto_ptr< std::vector<double> > ECorr(new std::vector<double>);
-	std::auto_ptr< std::vector<float> > PUJetID(new std::vector<float>);
+	std::auto_ptr< std::vector<double> > PUJetID(new std::vector<double>);
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
@@ -286,7 +286,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
 		  bDiscriminatorCSV->push_back( Jets->at(i).bDiscriminator("combinedSecondaryVertexBJetTags") );
 		  bDiscriminatorICSV->push_back( Jets->at(i).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-		  PUJetID->push_back( Jets->at(i).userFloat("pileupJetId:cutbasedId") );
+		  PUJetID->push_back( Jets->at(i).userFloat("pileupJetId:fullDiscriminant") );
 
 		  float NHF = Jets->at(i).neutralHadronEnergyFraction();
 		  float NEMF = Jets->at(i).neutralEmEnergyFraction();
