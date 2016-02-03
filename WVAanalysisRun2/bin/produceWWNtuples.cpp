@@ -642,6 +642,9 @@ int main (int argc, char** argv)
     for (unsigned i=0; i != ReducedTree->PhotonsNum; i++) {
 
         if (ReducedTree->PhotonsPt[i]<tempPt_ph) continue;
+
+        if (ReducedTree->Photons_hasPixelSeed[i]) continue;
+
         if (ReducedTree->Photons_isTight[i]==false) continue;
         if (!cut_flag[0][26]) for (int cut = 0; cut != 3; cut++) if (cut_flag[cut][25])
            {cutEff[cut][26]++; cut_flag[cut][26] = true;}

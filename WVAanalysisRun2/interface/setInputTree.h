@@ -67,6 +67,14 @@ public :
    Float_t         IsolatedTracksPhi[3];   //[IsolatedTracksNum]
    Float_t         IsolatedTracksE[3];   //[IsolatedTracksNum]
    Float_t         IsolatedTracksTLorentzVector[3];   //[IsolatedTracksNum]
+   UShort_t        GenPhotonNum;
+   Float_t         GenPhotonPt[2];   //[GenPhotonNum]
+   Float_t         GenPhotonEta[2];   //[GenPhotonNum]
+   Float_t         GenPhotonPhi[2];   //[GenPhotonNum]
+   Float_t         GenPhotonE[2];   //[GenPhotonNum]
+   Float_t         GenPhotonTLorentzVector[2];   //[GenPhotonNum]
+   Int_t           GenPhoton_GenPhotonIsPrompt[2];   //[GenPhotonNum]
+   Int_t           GenPhoton_GenPhotonStatus[2];   //[GenPhotonNum]
    UShort_t        GenBosonNum;
    Float_t         GenBosonPt[2];   //[GenBosonNum]
    Float_t         GenBosonEta[2];   //[GenBosonNum]
@@ -109,7 +117,6 @@ public :
    Float_t         JetsTLorentzVector[26];   //[JetsNum]
    Float_t         Jets_bDiscriminatorICSV[26];   //[JetsNum]
    Float_t         Jets_bDiscriminatorCSV[26];   //[JetsNum]
-   Float_t         Jets_PUJetID[26];   //[JetsNum]
    Float_t         Jets_chargedEmEnergyFraction[26];   //[JetsNum]
    Float_t         Jets_chargedHadronEnergyFraction[26];   //[JetsNum]
    Int_t           Jets_chargedHadronMultiplicity[26];   //[JetsNum]
@@ -208,6 +215,28 @@ public :
    UChar_t	   Photons_isLoose[7];
    UChar_t	   Photons_isMedium[7];
    UChar_t	   Photons_isTight[7];
+   Float_t	   Photons_minPt[7];
+   Float_t	   Photons_phoSCEtaMultiRange[7];
+   Float_t	   Photons_phoSingleTowerHadOverEm[7];
+   Float_t	   Photons_phoFull5x5SigmaIEtaIEta[7];
+   Float_t	   Photons_phoAnyPFIsoWithEA[7];
+   Float_t	   Photons_phoAnyPFIsoWithEAAndExpoScaling[7];
+   Float_t	   Photons_phoAnyPFIsoWithEA1[7];
+   UChar_t	   Photons_PassMinPt[7];
+   UChar_t	   Photons_PassPhoSCEtaMultiRange[7];
+   UChar_t	   Photons_PassPhoSingleTowerHadOverEm[7];
+   UChar_t	   Photons_PassPhoFull5x5SigmaIEtaIEta[7];
+   UChar_t	   Photons_PassPhoAnyPFIsoWithEA[7];
+   UChar_t	   Photons_PassPhoAnyPFIsoWithEAAndExpoScaling[7];
+   UChar_t	   Photons_PassPhoAnyPFIsoWithEA1[7];
+   UChar_t	   Photons_hasPixelSeed[7];
+   UChar_t	   Photons_passElectronVeto[7];
+   Float_t	   Photons_photonIso[7];
+   Float_t	   Photons_neutralHadIso[7];
+   Float_t	   Photons_chargedHadIso[7];
+   Float_t	   Photons_puChargedHadIso[7];
+   Float_t	   Photons_sigmaIetaIeta[7];
+
    
    std::vector<double>  *AQGCweights;
    std::vector<int>     *TriggerProducerTriggerPrescales;
@@ -260,6 +289,14 @@ public :
    TBranch        *b_IsolatedTracksPhi;   //!
    TBranch        *b_IsolatedTracksE;   //!
    TBranch        *b_IsolatedTracksTLorentzVector;   //!
+   TBranch        *b_GenPhotonNum;
+   TBranch        *b_GenPhotonPt;   //[GenPhotonNum]
+   TBranch        *b_GenPhotonEta;   //[GenPhotonNum]
+   TBranch        *b_GenPhotonPhi;   //[GenPhotonNum]
+   TBranch        *b_GenPhotonE;   //[GenPhotonNum]
+   TBranch        *b_GenPhotonTLorentzVector;   //[GenPhotonNum]
+   TBranch        *b_GenPhoton_GenPhotonIsPrompt;   //[GenPhotonNum]
+   TBranch        *b_GenPhoton_GenPhotonStatus;   //[GenPhotonNum]
    TBranch        *b_GenBosonNum;   //!
    TBranch        *b_GenBosonPt;   //!
    TBranch        *b_GenBosonEta;   //!
@@ -302,7 +339,6 @@ public :
    TBranch        *b_JetsTLorentzVector;   //!
    TBranch        *b_Jets_bDiscriminatorICSV;   //!
    TBranch        *b_Jets_bDiscriminatorCSV;   //!
-   TBranch        *b_Jets_PUJetID;   //!
    TBranch        *b_Jets_chargedEmEnergyFraction;   //!
    TBranch        *b_Jets_chargedHadronEnergyFraction;   //!
    TBranch        *b_Jets_chargedHadronMultiplicity;   //!
@@ -401,6 +437,27 @@ public :
    TBranch        *b_Photons_isLoose;   //!
    TBranch        *b_Photons_isMedium;   //!
    TBranch        *b_Photons_isTight;   //!
+   TBranch	  *b_Photons_minPt;
+   TBranch	  *b_Photons_phoSCEtaMultiRange;
+   TBranch	  *b_Photons_phoSingleTowerHadOverEm;
+   TBranch	  *b_Photons_phoFull5x5SigmaIEtaIEta;
+   TBranch	  *b_Photons_phoAnyPFIsoWithEA;
+   TBranch	  *b_Photons_phoAnyPFIsoWithEAAndExpoScaling;
+   TBranch	  *b_Photons_phoAnyPFIsoWithEA1;
+   TBranch	  *b_Photons_PassMinPt;
+   TBranch	  *b_Photons_PassPhoSCEtaMultiRange;
+   TBranch	  *b_Photons_PassPhoSingleTowerHadOverEm;
+   TBranch	  *b_Photons_PassPhoFull5x5SigmaIEtaIEta;
+   TBranch	  *b_Photons_PassPhoAnyPFIsoWithEA;
+   TBranch	  *b_Photons_PassPhoAnyPFIsoWithEAAndExpoScaling;
+   TBranch	  *b_Photons_PassPhoAnyPFIsoWithEA1;
+   TBranch	  *b_Photons_hasPixelSeed;
+   TBranch	  *b_Photons_passElectronVeto;
+   TBranch	  *b_Photons_photonIso;
+   TBranch	  *b_Photons_neutralHadIso;
+   TBranch	  *b_Photons_chargedHadIso;
+   TBranch	  *b_Photons_puChargedHadIso;
+   TBranch	  *b_Photons_sigmaIetaIeta;
    TBranch	  *b_TriggerProducerTriggerPrescales;
    TBranch	  *b_TriggerProducerTriggerPass;
    TBranch	  *b_TriggerProducerTriggerNames;

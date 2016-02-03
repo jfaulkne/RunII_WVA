@@ -78,6 +78,9 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	PrunedGenParticleTag_ 				= 	iConfig.getParameter<edm::InputTag >("PrunedGenParticleTag");	
+	const std::string string6("Photon");
+	const std::string string6t("PhotonIsPrompt");
+	const std::string string6s("PhotonStatus");
 	const std::string string1("Boson");
 	const std::string string1t("BosonPDGId");
 	const std::string string2("Muon");
@@ -96,6 +99,9 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
 	produces<std::vector<reco::GenParticle> > (string4).setBranchAlias(string4);
 	produces<std::vector<int> > (string4t).setBranchAlias(string4t);
 	produces<std::vector<reco::GenParticle> > (string5).setBranchAlias(string5);
+	produces<std::vector<reco::GenParticle> > (string6).setBranchAlias(string6);
+	produces<std::vector<int> > (string6t).setBranchAlias(string6t);
+	produces<std::vector<int> > (string6s).setBranchAlias(string6s);
 	/* Examples
 	 *   produces<ExampleData2>();
 	 * 
@@ -137,6 +143,10 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<reco::GenParticle> > selectedTau(new std::vector<reco::GenParticle>);
 	std::auto_ptr< std::vector<int> > selectedTauHadTronic(new std::vector<int>);
 	std::auto_ptr< std::vector<reco::GenParticle> > selectedNeutrino(new std::vector<reco::GenParticle>);
+	std::auto_ptr< std::vector<reco::GenParticle> > selectedPhoton(new std::vector<reco::GenParticle>);
+	std::auto_ptr< std::vector<int> > selectedPhotonIsPrompt(new std::vector<int>);
+	std::auto_ptr< std::vector<int> > selectedPhotonStatus(new std::vector<int>);
+
 	Handle<edm::View<reco::GenParticle> > pruned;
 	iEvent.getByLabel(PrunedGenParticleTag_,pruned);
 	for(size_t i=0; i<pruned->size();i++)
@@ -190,7 +200,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				}
 			}
 
-		}
+		}else if(abs((*pruned)[i].pdgId()) == 22) {
+		    selectedPhoton->push_back((*pruned)[i]);
+		    selectedPhotonIsPrompt->push_back((*pruned)[i].isPromptFinalState());
+		    selectedPhotonStatus->push_back((*pruned)[i].status());
+                }
 	}
 	const std::string string1("Boson");
 	const std::string string1t("BosonPDGId");
@@ -201,6 +215,9 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	const std::string string4("Tau");
 	const std::string string4t("TauHadronic");
 	const std::string string5("Neutrino");
+	const std::string string6("Photon");
+	const std::string string6t("PhotonIsPrompt");
+	const std::string string6s("PhotonStatus");
 	iEvent.put(selectedBoson,string1);
 	iEvent.put(selectedBosonPDGId,string1t);
 	iEvent.put(selectedMuon,string2);
@@ -210,6 +227,9 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(selectedTau,string4);
 	iEvent.put(selectedTauHadTronic,string4t);
 	iEvent.put(selectedNeutrino,string5);
+	iEvent.put(selectedPhoton,string6);
+	iEvent.put(selectedPhotonIsPrompt,string6t);
+	iEvent.put(selectedPhotonStatus,string6s);
 	
 }
 

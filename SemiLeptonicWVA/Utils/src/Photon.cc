@@ -131,6 +131,20 @@ Photon::Photon(const edm::ParameterSet& iConfig):
         produces<std::vector<double> > (string12).setBranchAlias(string12);
         const std::string string13("phoAnyPFIsoWithEA1");
         produces<std::vector<double> > (string13).setBranchAlias(string13);
+        const std::string string21("PassMinPt");
+        produces<std::vector<bool> > (string21).setBranchAlias(string21);
+        const std::string string22("PassPhoSCEtaMultiRange");
+        produces<std::vector<bool> > (string22).setBranchAlias(string22);
+        const std::string string23("PassPhoSingleTowerHadOverEm");
+        produces<std::vector<bool> > (string23).setBranchAlias(string23);
+        const std::string string24("PassPhoFull5x5SigmaIEtaIEta");
+        produces<std::vector<bool> > (string24).setBranchAlias(string24);
+        const std::string string25("PassPhoAnyPFIsoWithEA");
+        produces<std::vector<bool> > (string25).setBranchAlias(string25);
+        const std::string string26("PassPhoAnyPFIsoWithEAAndExpoScaling");
+        produces<std::vector<bool> > (string26).setBranchAlias(string26);
+        const std::string string27("PassPhoAnyPFIsoWithEA1");
+        produces<std::vector<bool> > (string27).setBranchAlias(string27);
 
         const std::string string14("hasPixelSeed");
         produces<std::vector<bool> > (string14).setBranchAlias(string14);
@@ -185,6 +199,13 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEA(new std::vector<double>);
         std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEAAndExpoScaling(new std::vector<double>);
         std::auto_ptr< std::vector<double> > phoAnyPFIsoWithEA1(new std::vector<double>);
+        std::auto_ptr< std::vector<bool> > PassMinPt(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoSCEtaMultiRange(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoSingleTowerHadOverEm(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoFull5x5SigmaIEtaIEta(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoAnyPFIsoWithEA(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoAnyPFIsoWithEAAndExpoScaling(new std::vector<bool>);
+        std::auto_ptr< std::vector<bool> > PassPhoAnyPFIsoWithEA1(new std::vector<bool>);
 
         std::auto_ptr< std::vector<bool> > passElectronVeto(new std::vector<bool>);
         std::auto_ptr< std::vector<bool> > hasPixelSeed(new std::vector<bool>);
@@ -239,6 +260,13 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   phoAnyPFIsoWithEA->push_back(fullCutFlowData.getValueCutUpon(4));
                   phoAnyPFIsoWithEAAndExpoScaling->push_back(fullCutFlowData.getValueCutUpon(5));
                   phoAnyPFIsoWithEA1->push_back(fullCutFlowData.getValueCutUpon(6));
+                  PassMinPt->push_back(fullCutFlowData.getCutResultByIndex(0));
+                  PassPhoSCEtaMultiRange->push_back(fullCutFlowData.getCutResultByIndex(1));
+                  PassPhoSingleTowerHadOverEm->push_back(fullCutFlowData.getCutResultByIndex(2));
+                  PassPhoFull5x5SigmaIEtaIEta->push_back(fullCutFlowData.getCutResultByIndex(3));
+                  PassPhoAnyPFIsoWithEA->push_back(fullCutFlowData.getCutResultByIndex(4));
+                  PassPhoAnyPFIsoWithEAAndExpoScaling->push_back(fullCutFlowData.getCutResultByIndex(5));
+                  PassPhoAnyPFIsoWithEA1->push_back(fullCutFlowData.getCutResultByIndex(6));
 
                   passElectronVeto->push_back(PassElectronVeto);
                   hasPixelSeed->push_back(HasPixelSeed);
@@ -295,6 +323,20 @@ Photon::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.put(phoAnyPFIsoWithEAAndExpoScaling,string12);
         const std::string string13("phoAnyPFIsoWithEA1");
         iEvent.put(phoAnyPFIsoWithEA1,string13);
+        const std::string string21("PassMinPt");
+        iEvent.put(PassMinPt,string21);
+        const std::string string22("PassPhoSCEtaMultiRange");
+        iEvent.put(PassPhoSCEtaMultiRange,string22);
+        const std::string string23("PassPhoSingleTowerHadOverEm");
+        iEvent.put(PassPhoSingleTowerHadOverEm,string23);
+        const std::string string24("PassPhoFull5x5SigmaIEtaIEta");
+        iEvent.put(PassPhoFull5x5SigmaIEtaIEta,string24);
+        const std::string string25("PassPhoAnyPFIsoWithEA");
+        iEvent.put(PassPhoAnyPFIsoWithEA,string25);
+        const std::string string26("PassPhoAnyPFIsoWithEAAndExpoScaling");
+        iEvent.put(PassPhoAnyPFIsoWithEAAndExpoScaling,string26);
+        const std::string string27("PassPhoAnyPFIsoWithEA1");
+        iEvent.put(PassPhoAnyPFIsoWithEA1,string27);
 
         const std::string string14("hasPixelSeed");
         iEvent.put(hasPixelSeed,string14);
