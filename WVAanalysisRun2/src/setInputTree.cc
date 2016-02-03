@@ -166,6 +166,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("Jets_EtaCorr", Jets_EtaCorr, &b_Jets_EtaCorr);
    fChain->SetBranchAddress("Jets_PhiCorr", Jets_PhiCorr, &b_Jets_PhiCorr);
    fChain->SetBranchAddress("Jets_ECorr", Jets_ECorr, &b_Jets_ECorr);
+   fChain->SetBranchAddress("Jets_PUJetID", Jets_PUJetID, &b_Jets_PUJetID);
    fChain->SetBranchAddress("AK8JetsNum", &AK8JetsNum, &b_AK8JetsNum);
    fChain->SetBranchAddress("AK8JetsPt", AK8JetsPt, &b_AK8JetsPt);
    fChain->SetBranchAddress("AK8JetsEta", AK8JetsEta, &b_AK8JetsEta);

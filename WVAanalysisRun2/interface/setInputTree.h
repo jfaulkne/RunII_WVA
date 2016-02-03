@@ -133,6 +133,7 @@ public :
    Float_t         Jets_EtaCorr[26];   //[JetsNum]
    Float_t         Jets_PhiCorr[26];   //[JetsNum]
    Float_t         Jets_ECorr[26];   //[JetsNum]
+   Float_t         Jets_PUJetID[26];   //[JetsNum]
    UShort_t        AK8JetsNum;
    Float_t         AK8JetsPt[7];   //[AK8JetsNum]
    Float_t         AK8JetsEta[7];   //[AK8JetsNum]
@@ -355,6 +356,7 @@ public :
    TBranch        *b_Jets_EtaCorr;   //!
    TBranch        *b_Jets_PhiCorr;   //!
    TBranch        *b_Jets_ECorr;   //!
+   TBranch        *b_Jets_PUJetID;   //!
    TBranch        *b_AK8JetsNum;   //!
    TBranch        *b_AK8JetsPt;   //!
    TBranch        *b_AK8JetsEta;   //!
