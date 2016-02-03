@@ -31,6 +31,8 @@
 #include "../interface/METzCalculator_Run2.h"
 #include "../interface/analysisUtils.h"
 
+#include "../interface/SF.h"
+
 using namespace std;
 
 //*****PU WEIGHT***************
@@ -129,12 +131,16 @@ int main (int argc, char** argv)
 { 
   std::string inputFolder = argv[1];
   std::string outputFile = argv[2];
-  bool isMC = argv[3];
+  int isMC = std::atof(argv[3]);
   std::string leptonName = argv[4];
   std::string inputTreeName = argv[5];
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
   std::string numberOfEntries = argv[8];
+  int isAQGC = std::atof(argv[9]);
+  std::string firstEvent = argv[10];
+  int applyPUJetID = std::atof(argv[11]);
+
   float weight = std::atof(xSecWeight.c_str())/std::atof(numberOfEntries.c_str());
   if (strcmp(leptonName.c_str(),"el")!=0 && strcmp(leptonName.c_str(),"mu")!=0) {
     std::cout<<"Error: wrong lepton category"<<std::endl;
@@ -181,6 +187,7 @@ int main (int argc, char** argv)
 
   //---------start loop on events------------
   Long64_t max_evt = std::atof(numberOfEntries.c_str());
+  if (max_evt == -1) max_evt = ReducedTree->fChain->GetEntries();
   if (ReducedTree->fChain->GetEntries() < max_evt) max_evt = ReducedTree->fChain->GetEntries();
   for (Long64_t jentry = 0; jentry != max_evt; jentry++) {
 
@@ -188,6 +195,7 @@ int main (int argc, char** argv)
     if (iEntry < 0) {cout << "Error loading event " << jentry+1 << endl; break;}
 
     int nb = ReducedTree->fChain->GetEntry(jentry);   
+    if (jentry < std::atof(firstEvent.c_str())-1) continue;
 
     tightPh.clear();
     tightMuon.clear();
@@ -484,6 +492,14 @@ int main (int argc, char** argv)
         if (ReducedTree->Jets_bDiscriminatorCSV[i]>=0.679)   continue;
         for (int cut = 0; cut != 2; cut++) if (!cut_flag[cut][17]) {cutEff[cut][17]++; cut_flag[cut][17] = true;}
 
+        //Clean from PU (medium working point, 95%):
+        if (applyPUJetID) {
+        if (fabs(ReducedTree->JetsEta[i]) < 2. && ReducedTree->Jets_PUJetID[i] >= -0.483) continue;
+        else if (fabs(ReducedTree->JetsEta[i]) >= 2. && fabs(ReducedTree->JetsEta[i]) < 2.5 && ReducedTree->Jets_PUJetID[i] >= -0.663) continue;
+        else if (fabs(ReducedTree->JetsEta[i]) >= 2.5 && fabs(ReducedTree->JetsEta[i]) < 3. && ReducedTree->Jets_PUJetID[i] >= -0.445) continue;
+        else if (fabs(ReducedTree->JetsEta[i]) >= 3. && fabs(ReducedTree->JetsEta[i]) < 5. && ReducedTree->Jets_PUJetID[i] >= -0.296) continue;
+        }
+
 	//CLEANING FROM LEPTON
 	if (deltaR(WWTree->l_eta, WWTree->l_phi, ReducedTree->JetsEta[i], ReducedTree->JetsPhi[i]) <= 0.3) continue;
         for (int cut = 0; cut != 2; cut++) if (!cut_flag[cut][18]) {cutEff[cut][18]++; cut_flag[cut][18] = true;}
@@ -773,8 +789,17 @@ int main (int argc, char** argv)
     WWTree->vbf_maxpt_jj_phi = TOT.Phi();
 
     //Pass along the AQGC weights:
+    if (isAQGC) {
     WWTree->originalWeight = ReducedTree->originalWeight;
     WWTree->AQGCweights = *(ReducedTree->AQGCweights);
+    }
+
+    // Pass along SF's:
+    if (isMC) {
+       WWTree->scaleFactor *= SF_Photon(WWTree->photon_eta, WWTree->photon_pt);
+       if (strcmp(leptonName.c_str(),"el")==0) WWTree->scaleFactor *= SF_Elec(WWTree->l_eta, WWTree->l_pt);
+       else WWTree->scaleFactor *= SF_Muon(WWTree->l_eta, WWTree->l_pt);
+    }
 
     //fill the tree
     outTree->Fill();

@@ -18,6 +18,7 @@ class setOutputTree {
   int isBoostedSignal;
   float wSampleWeight;
   float genWeight;
+  float scaleFactor;
   float originalWeight;
   std::vector<double> AQGCweights;
   float totalEventWeight;

@@ -19,6 +19,7 @@ void setOutputTree::initializeVariables()
   isBoostedSignal=-999;
   wSampleWeight=-999;
   genWeight=1;
+  scaleFactor=1;
   originalWeight=-1;
   totalEventWeight=-999;
   totalEventWeight_2=-999;
@@ -103,6 +104,7 @@ void setOutputTree::setBranches()
   fTree->Branch("isBoostedSignal",&isBoostedSignal,"isBoostedSignal/I");
   fTree->Branch("wSampleWeight",&wSampleWeight,"wSampleWeight/F");
   fTree->Branch("genWeight",&genWeight,"genWeight/F");
+  fTree->Branch("scaleFactor",&scaleFactor,"scaleFactor/F");
   fTree->Branch("originalWeight",&originalWeight,"originalWeight/F");
   fTree->Branch("AQGCweights",&AQGCweights);
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
